@@ -541,39 +541,39 @@ const routes = [
       }
     ]
   },
-  {
-    path: "/alert",
-    component: Main,
-    name: "alert",
-    meta: {
-      title:"监控告警",
-      hideInMenu: false,
-      icon: "md-alert",
-      access: ['alert']
-    },
-    children: [
-      {
-        path: "rule",
-        name: "rule",
-        meta: {
-          title: "规则管理",
-          icon: "md-barcode",
-          access: ['rule']
-        },
-        component: () => import("@/view/alert/alert.vue")
-      },
-      {
-        path: "Scrape",
-        name: "Scrape",
-        meta: {
-          title: "Scrape",
-          icon: "md-contract",
-          access: ['scrape']
-        },
-        component: () => import("@/view/alert/alert.vue")
-      }
-    ]
-  },
+  // {
+  //   path: "/alert",
+  //   component: Main,
+  //   name: "alert",
+  //   meta: {
+  //     title:"监控告警",
+  //     hideInMenu: false,
+  //     icon: "md-alert",
+  //     access: ['alert']
+  //   },
+  //   children: [
+  //     {
+  //       path: "rule",
+  //       name: "rule",
+  //       meta: {
+  //         title: "规则管理",
+  //         icon: "md-barcode",
+  //         access: ['rule']
+  //       },
+  //       component: () => import("@/view/alert/alert.vue")
+  //     },
+  //     {
+  //       path: "Scrape",
+  //       name: "Scrape",
+  //       meta: {
+  //         title: "Scrape",
+  //         icon: "md-contract",
+  //         access: ['scrape']
+  //       },
+  //       component: () => import("@/view/alert/alert.vue")
+  //     }
+  //   ]
+  // },
   {
     path: "/cplugin",
     component: Main,
