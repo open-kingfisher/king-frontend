@@ -1,0 +1,60 @@
+@import '~view-design/src/styles/index.less';
+
+/* @menu-dark-title: #001529;
+@menu-dark-active-bg: #000c17;
+@layout-sider-background: #001529;
+
+ */
+
+@primary-color: #19be6b;
+@link-color: #19be6b;
+//@menu-dark-title: #FFFFFF;
+@layout-header-background: #fff;
+//@menu-dark-active-bg: #000c17;
+//@layout-sider-background: #2F4050;
+//@layout-header-background:red;
+@tooltip-bg: #00a854;
+
+//Card 的padding
+@card-prefix-cls: ~"@{css-prefix}card";
+.@{card-prefix-cls}{
+    &-body {
+        padding: 0;
+    }
+}
+
+//iview-table-expanded-cell 的padding
+@table-prefix-cls: ~"@{css-prefix}table";
+@table-select-item-prefix-cls: ~"@{table-prefix-cls}-filter-select-item";
+.@{table-prefix-cls} {
+    td&-expanded-cell{
+        padding: 20px 15px;
+        background: @table-thead-bg;
+    }
+
+}
+// iview 升级到 view-design 4.0.0 改变字体大小
+@font-size-base : 12px;
+.@{menu-prefix-cls} {
+  font-size: @font-size-large;
+  &-item{
+        font-size: @font-size-large;
+    }
+}
+.@{tabs-prefix-cls} {
+  &-nav-container {
+        font-size: @font-size-large;
+    }
+}
+
+.@{tag-prefix-cls} {
+  height: 100%;
+  text-align: left !important;
+}
+
+@notice-width: 400px;
+.@{notice-prefix-cls} {
+  &-notice {
+    word-wrap: break-word !important;
+  }
+}
