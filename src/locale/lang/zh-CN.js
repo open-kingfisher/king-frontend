@@ -138,5 +138,8 @@ export default {
   warm_up: '镜像预热',
   create: '创建',
   next: '下一步',
-  previous: '上一步'
+  previous: '上一步',
+  kind: '类型',
+  nodeName: '节点名',
+  hostIp: '节点IP'
 }

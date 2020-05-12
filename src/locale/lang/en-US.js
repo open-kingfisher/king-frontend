@@ -139,5 +139,8 @@ export default {
   warm_up: 'Image Warm-up',
   create: 'Create',
   next: 'Next',
-  previous: 'Previous'
+  previous: 'Previous',
+  kind: 'Kind',
+  nodeName: 'Node Name',
+  hostIp: 'Node IP'
 }

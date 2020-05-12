@@ -9,15 +9,7 @@
           </div>
         </Col>
       </Row>
-<!--      <Row>-->
-<!--        <Col span="24">-->
-<!--          <Table border stripe :loading="loading" :data="tableData" :columns="columns" style="margin: 13px"></Table>-->
-<!--        </Col>-->
-<!--      </Row>-->
       <SearchTable :loading="loading" :columns="columns" :data="tableData">
-<!--        <ButtonGroup>-->
-<!--          <Button @click="refresh()" type="success" ghost>{{ this.$t('refresh') }}</Button>-->
-<!--        </ButtonGroup>-->
       </SearchTable>
     </Card>
   </div>
@@ -38,7 +30,7 @@ export default {
       loading: false,
       columns: [
         {
-          title: '产品线',
+          title: this.$t('product'),
           key: 'product',
           render: (h, params) => {
             return h(
@@ -66,23 +58,23 @@ export default {
           }
         },
         {
-          title: '集群',
+          title: this.$t('cluster'),
           key: 'cluster'
         },
         {
-          title: '命名空间',
+          title: this.$t('namespace'),
           key: 'namespace'
         },
         {
-          title: '节点IP',
+          title: this.$t('hostIp'),
           key: 'hostIp'
         },
         {
-          title: '节点名',
+          title: this.$t('nodeName'),
           key: 'nodeName'
         },
         {
-          title: '类型',
+          title: this.$t('kind'),
           key: 'kind',
           render: (h, params) => {
             return h(
