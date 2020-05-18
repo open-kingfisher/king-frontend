@@ -50,6 +50,7 @@ const platformRole = () => import('@/view/manage/platform-role/platform-role.vue
 const user = () => import('@/view/manage/user/user.vue')
 const plugin = () => import('@/view/manage/plugin/plugin.vue')
 const audit = () => import('@/view/manage/audit/audit.vue')
+const config = () => import('@/view/manage/config/config.vue')
 const search = () => import('@/view/search/search.vue')
 const errorPage401 = () => import('@/view/error-page/401.vue')
 const errorPage500 = () => import('@/view/error-page/500.vue')
@@ -108,6 +109,7 @@ export default {
   user,
   plugin,
   audit,
+  config,
   search,
   errorPage401,
   errorPage500,

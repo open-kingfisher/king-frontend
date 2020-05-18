@@ -704,6 +704,16 @@ const routes = [
         component: () => import("@/view/manage/plugin/plugin.vue")
       },
       {
+        path: "config",
+        name: "config",
+        meta: {
+          title: "配置管理",
+          icon: "md-create",
+          access: ['config']
+        },
+        component: () => import("@/view/manage/config/config.vue")
+      },
+      {
         path: "audit",
         name: "audit",
         meta: {

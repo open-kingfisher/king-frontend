@@ -142,5 +142,6 @@ export default {
   previous: 'Previous',
   kind: 'Kind',
   nodeName: 'Node Name',
-  hostIp: 'Node IP'
+  hostIp: 'Node IP',
+  config: 'Config'
 }

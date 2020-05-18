@@ -141,5 +141,6 @@ export default {
   previous: '上一步',
   kind: '类型',
   nodeName: '节点名',
-  hostIp: '节点IP'
+  hostIp: '节点IP',
+  config: '配置管理'
 }
