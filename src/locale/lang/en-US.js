@@ -143,5 +143,7 @@ export default {
   kind: 'Kind',
   nodeName: 'Node Name',
   hostIp: 'Node IP',
-  config: 'Config'
+  config: 'Config',
+  save: 'Save',
+  connect_ldap: 'Test LDAP SERVER'
 }

@@ -142,5 +142,7 @@ export default {
   kind: '类型',
   nodeName: '节点名',
   hostIp: '节点IP',
-  config: '配置管理'
+  config: '配置管理',
+  save: '保存',
+  connect_ldap: '测试LDAP服务器'
 }
