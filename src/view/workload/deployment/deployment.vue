@@ -1760,13 +1760,13 @@ export default {
             requests: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             },
             limits: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             }
           },
@@ -2912,13 +2912,13 @@ export default {
             requests: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             },
             limits: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             }
           },
@@ -3563,13 +3563,13 @@ export default {
             requests: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             },
             limits: {
               cpu: '',
               memory: '',
-              cpuUnit: 'm',
+              cpuUnit: 'core',
               memoryUnit: 'Mi'
             }
           },
@@ -3921,13 +3921,13 @@ export default {
           requests: {
             cpu: '',
             memory: '',
-            cpuUnit: 'm',
+            cpuUnit: 'core',
             memoryUnit: 'Mi'
           },
           limits: {
             cpu: '',
             memory: '',
-            cpuUnit: 'm',
+            cpuUnit: 'core',
             memoryUnit: 'Mi'
           }
         }
@@ -3951,8 +3951,8 @@ export default {
           })
           let requestsCPU = ''
           let limitsCPU = ''
-          let requestsCPUUnit = 'm'
-          let limitsCPUUnit = 'm'
+          let requestsCPUUnit = 'core'
+          let limitsCPUUnit = 'core'
           if (item.resources.requests && item.resources.requests.cpu) {
             requestsCPU = item.resources.requests.cpu.split('m')[0]
             requestsCPUUnit = item.resources.requests.cpu.includes('m') ? 'm' : 'core'
