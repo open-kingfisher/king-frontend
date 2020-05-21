@@ -28,24 +28,12 @@ export const Create = params => {
   })
 }
 
-export const Update = params => {
+export const Test = params => {
   return baseAxios.request({
-    url: KF_URL_PREFIX + 'config',
-    method: 'put',
+    url: KF_URL_PREFIX + 'ldap/test?configType=' + params.configType,
+    method: 'post',
     data: {
-      id: params.id,
-      name: params.name,
-      describe: params.describe
-    }
-  })
-}
-
-export const Delete = params => {
-  return baseAxios.request({
-    url: KF_URL_PREFIX + 'config/' + params.resourceName,
-    method: 'delete',
-    params: {
-      productId: params.productId
+      ldap: params.ldap
     }
   })
 }

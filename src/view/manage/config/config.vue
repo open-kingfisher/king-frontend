@@ -7,7 +7,7 @@
           <Tabs value="status">
             <TabPane label="认证模式" name="status">
               <Card shadow>
-                <Col span="10" style="margin-top: 20px; margin-left: 10px">
+                <Col span="18" style="margin-top: 20px; margin-left: 10px">
                  <Form ref="createForm" :model="formItem"  :label-width="120">
                    <FormItem label="认证模式" prop="mode">
                      <Select v-model="formItem.ldap.mode">
@@ -20,19 +20,22 @@
                        <Input v-model="formItem.ldap.url" placeholder="ldap://ldap.example.com389"></Input>
                      </FormItem>
                      <FormItem label="LDAP 搜索DN" prop="ldap.searchDN" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
-                       <Input v-model="formItem.ldap.searchDN" placeholder="cn=example,ou=ldap,dc=example"></Input>
+                       <Input v-model="formItem.ldap.searchDN" placeholder="有搜索权限的LDAP用户DN。如果LDAP服务器不支持匿名搜索，则需要配置搜索密码。如：cn=example,ou=ldap,dc=example"></Input>
                      </FormItem>
                      <FormItem label="LDAP 搜索密码" prop="ldap.searchPassword" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
                        <Input type="password" v-model="formItem.ldap.searchPassword"></Input>
                      </FormItem>
+                     <FormItem label="LDAP 基础DN" prop="ldap.baseDN" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
+                       <Input v-model="formItem.ldap.baseDN" placeholder="用来在LDAP和AD中搜寻用户的基础DN"></Input>
+                     </FormItem>
                      <FormItem label="LDAP 用户过滤器" prop="ldap.userFilter" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
-                       <Input v-model="formItem.ldap.userFilter"></Input>
+                       <Input v-model="formItem.ldap.userFilter" placeholder="在搜索中用来匹配用户属性，可以是uid，cn，email或者其他LDAP/AD服务器支持的属性"></Input>
                      </FormItem>
-                     <FormItem label="LDAP 用户属性" prop="ldap.attributes" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
-                       <Input v-model="formItem.ldap.attributes"></Input>
-                     </FormItem>
+<!--                     <FormItem label="LDAP 用户属性" prop="ldap.attributes" :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">-->
+<!--                       <Input v-model="formItem.ldap.attributes"></Input>-->
+<!--                     </FormItem>-->
                      <FormItem label="LDAP 检查证书">
-                       <i-switch v-model="formItem.ldap.tls" size="large" :true-value=1 :false-value=0>
+                       <i-switch v-model="formItem.ldap.tls" size="large" :true-value=true :false-value=false>
                          <span slot="open">开启</span>
                          <span slot="close">关闭</span>
                        </i-switch>
@@ -40,8 +43,8 @@
                    </div>
                    <FormItem>
                      <Button type="primary" @click="save('ldap')">{{this.$t('save')}}</Button>
-                     <Button style="margin-left: 8px">{{this.$t('cancel')}}</Button>
-                     <Button style="margin-left: 8px" v-if="formItem.ldap.mode === 'ldap'">{{this.$t('connect_ldap')}}</Button>
+<!--                     <Button style="margin-left: 8px">{{this.$t('cancel')}}</Button>-->
+                     <Button style="margin-left: 8px" v-if="formItem.ldap.mode === 'ldap'" @click="test('ldap')">{{this.$t('connect_ldap')}}</Button>
                    </FormItem>
                  </Form>
                 </Col>
@@ -62,8 +65,7 @@
 <script>
 import {
   Get,
-  Delete,
-  Update,
+  Test,
   Create
 } from '@/api/config'
 import Information from '../../other-page/information.vue'
@@ -80,6 +82,7 @@ export default {
           url: '',
           searchDN: '',
           searchPassword: '',
+          baseDN: '',
           userFilter: '',
           tls: 1,
           attributes: ''
@@ -101,9 +104,10 @@ export default {
         this.formItem.ldap.url = res.data.ldap.url
         this.formItem.ldap.searchDN = res.data.ldap.searchDN
         this.formItem.ldap.searchPassword = res.data.ldap.searchPassword
+        this.formItem.ldap.baseDN = res.data.ldap.baseDN
         this.formItem.ldap.userFilter = res.data.ldap.userFilter
         this.formItem.ldap.tls = res.data.ldap.tls
-        this.formItem.ldap.attributes = res.data.ldap.attributes
+        // this.formItem.ldap.attributes = res.data.ldap.attributes
       })
     },
     save (value) {
@@ -117,8 +121,9 @@ export default {
             searchDN: this.formItem.ldap.searchDN,
             searchPassword: this.formItem.ldap.searchPassword,
             userFilter: this.formItem.ldap.userFilter,
-            tls: this.formItem.ldap.tls,
-            attributes: this.formItem.ldap.attributes
+            baseDN: this.formItem.ldap.baseDN,
+            tls: this.formItem.ldap.tls
+            // attributes: this.formItem.ldap.attributes
           }
         }
       }
@@ -130,11 +135,35 @@ export default {
                 content: this.$t('action_success')
               })
               this.formatTableData()
-              this.modalShow = false
             } else {
               this.$Message.error('操作失败')
             }
           })
+        }
+      })
+    },
+    test () {
+      let params = {}
+      params = {
+        configType: 'ldap',
+        ldap: {
+          mode: this.formItem.ldap.mode,
+          url: this.formItem.ldap.url,
+          searchDN: this.formItem.ldap.searchDN,
+          searchPassword: this.formItem.ldap.searchPassword,
+          userFilter: this.formItem.ldap.userFilter,
+          baseDN: this.formItem.ldap.baseDN,
+          tls: this.formItem.ldap.tls
+          // attributes: this.formItem.ldap.attributes
+        }
+      }
+      Test(params).then(res => {
+        if (res.code === 200) {
+          this.$Message.success({
+            content: this.$t('ldap_test_success')
+          })
+        } else {
+          this.$Message.error('操作失败')
         }
       })
     },
