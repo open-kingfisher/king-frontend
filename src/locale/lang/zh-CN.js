@@ -129,6 +129,7 @@ export default {
   resolution: '服务发现模式',
   addresses: '地址',
   action_success: '操作成功',
+  ldap_test_success: 'LDAP 连接测试成功',
   refresh_success: '刷新成功',
   create_success: '创建成功',
   edit_success: '编辑成功',

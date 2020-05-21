@@ -129,6 +129,7 @@ export default {
   resolution: 'Resolution',
   addresses: 'Addresses',
   action_success: 'Action Success',
+  ldap_test_success: 'LDAP Connect Success',
   refresh_success: 'Refresh Success',
   create_success: 'Create Success',
   create_failure: 'Create Failure',
