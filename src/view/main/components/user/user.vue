@@ -39,9 +39,6 @@ export default {
           break
       }
     }
-  },
-  mounted () {
-    console.log(this.$store.state.user.userName)
   }
 }
 </script>
