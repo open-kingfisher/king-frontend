@@ -1,8 +1,11 @@
 <template>
   <div class="user-avator-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar :src="userAvator" style="border:1px solid #ccc"/>
-      <Icon :size="18" type="md-arrow-dropdown"></Icon>
+      <a href="javascript:void(0)">
+        <Avatar :src="userAvator" style="border:1px solid #ccc"/>
+        {{ this.$store.state.user.userName }}
+        <Icon :size="18" type="md-arrow-dropdown"></Icon>
+      </a>
       <DropdownMenu slot="list">
         <DropdownItem name="logout" style="text-align: center">退出登录</DropdownItem>
       </DropdownMenu>
@@ -36,6 +39,9 @@ export default {
           break
       }
     }
+  },
+  mounted () {
+    console.log(this.$store.state.user.userName)
   }
 }
 </script>
