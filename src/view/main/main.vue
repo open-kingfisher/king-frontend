@@ -7,8 +7,9 @@
       <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
         <user :user-avator="userAvator"/>
         <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-        <message style="margin-right: 10px;"/>
-        <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
+<!--        <message style="margin-right: 10px; margin-top: 4px;" />-->
+        <version style="margin-right: 10px; margin-top: 4px;"/>
+        <fullscreen v-model="isFullscreen" style="margin-right: 10px; margin-top: 4px"/>
         <cluster-select style="margin-right: 10px"/>
       </header-bar>
     </Header>
@@ -43,6 +44,7 @@ import Fullscreen from './components/fullscreen'
 import ClusterSelect from './components/cluster-select'
 import UpdateLog from './components/update-log'
 import Message from './components/message'
+import Version from './components/version'
 import { mapMutations, mapActions } from 'vuex'
 import { getNewTagList, getNextName } from '../../libs/util'
 import minLogo from '../../assets/images/kingfisher_min.png'
@@ -59,7 +61,8 @@ export default {
     User,
     ClusterSelect,
     Fullscreen,
-    Message
+    Message,
+    Version
   },
   provide () {
     return {
