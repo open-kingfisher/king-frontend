@@ -9,55 +9,58 @@
       </SearchTable>
     </Card>
     <Modal slot="option" v-model="modalShow" :title=title>
-        <Form ref="createForm" :model="formItem" :label-width="60"  :rules="ruleValidate">
-          <FormItem label="用户名" prop="name">
-            <template v-if="modalMode === 'CREATE'">
-              <Row  type="flex" justify="start" gutter="12">
-                <Col span="19">
-                  <Input v-model="formItem.name"></Input>
-                </Col>
-                <Col span="3">
-                  <Button type="success" @click="fillBtnClick(formItem.name)" :disabled="!formItem.name.length">
-                    自动填充
-                  </Button>
-                </Col>
-              </Row>
-            </template>
-            <template v-else>
-              <Input v-model="formItem.name"></Input>
-            </template>
-          </FormItem>
-          <FormItem label="姓名" prop="realName">
-            <Input v-model="formItem.realName"></Input>
-          </FormItem>
-          <FormItem label="邮箱" prop="mail">
-            <Input v-model="formItem.mail"></Input>
-          </FormItem>
-          <FormItem :label="this.$t('role')" prop="role">
-            <Select v-model="formItem.role">
-              <Option v-for="item in roleData" :value="item.id" :key="item.id" :label="item.name">
-                <span>{{ item.name }}</span>
-                <span style="float:right;color:#ccc">{{ item.describe}}</span>
-              </Option>
-            </Select>
-          </FormItem>
-          <FormItem label="资源">
-            <div style="overflow:auto; height: 300px; margin-top: 0px" >
-              <Tree
-                :data="userTree"
-                show-checkbox
-                :check-strictly="false"
-                :render="renderContent"
-                ref="tree"
-              ></Tree>
-            </div>
-          </FormItem>
-        </Form>
-        <div slot="footer">
-          <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
-          <Button type="primary" @click="confirm()">{{this.$t('commit')}}</Button>
-        </div>
-     </Modal>
+      <Form ref="createForm" :model="formItem" :label-width="60" :rules="ruleValidate">
+        <FormItem label="用户名" prop="name">
+          <template v-if="modalMode === 'CREATE'">
+            <Row type="flex" justify="start" :gutter="12">
+              <Col :span="authMode === 'ldap' ? 19 : 24">
+                <Input v-model="formItem.name"></Input>
+              </Col>
+              <Col span="3" v-if="authMode === 'ldap'">
+                <Button type="success" @click="fillBtnClick(formItem.name)" :disabled="!formItem.name.length">
+                  自动填充
+                </Button>
+              </Col>
+            </Row>
+          </template>
+          <template v-else>
+            <Input v-model="formItem.name"></Input>
+          </template>
+        </FormItem>
+        <FormItem label="姓名" prop="realName">
+          <Input v-model="formItem.realName"></Input>
+        </FormItem>
+        <FormItem label="邮箱" prop="mail">
+          <Input v-model="formItem.mail"></Input>
+        </FormItem>
+        <FormItem label="密码" prop="password" v-if="authMode === 'local' && modalMode === 'CREATE'">
+          <Input type="password" v-model="formItem.password"></Input>
+        </FormItem>
+        <FormItem :label="this.$t('role')" prop="role">
+          <Select v-model="formItem.role">
+            <Option v-for="item in roleData" :value="item.id" :key="item.id" :label="item.name">
+              <span>{{ item.name }}</span>
+              <span style="float:right;color:#ccc">{{ item.describe}}</span>
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem label="资源">
+          <div style="overflow:auto; height: 300px; margin-top: 0px">
+            <Tree
+              :data="userTree"
+              show-checkbox
+              :check-strictly="false"
+              :render="renderContent"
+              ref="tree"
+            ></Tree>
+          </div>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
+        <Button type="primary" @click="confirm()">{{this.$t('commit')}}</Button>
+      </div>
+    </Modal>
     <Modal v-model="deleteModel" width="360">
       <p slot="header" title="删除">
           <span>删除</span>
@@ -69,12 +72,26 @@
         <Button type="error" size="large" long  @click="del()" :loading="deleteLoading">{{this.$t('delete')}}</Button>
       </div>
     </Modal>
+    <Modal slot="option" v-model="changePasswordShow" :title=title>
+      <Form ref="changePasswordForm" :model="formItemChangePassword" :label-width="70" :rules="ruleValidateChangePassword">
+        <FormItem label="密码" prop="password">
+          <Input type="password" v-model="formItemChangePassword.password"></Input>
+        </FormItem>
+        <FormItem label="确认密码" prop="confirm" class="ivu-form-item ivu-form-item-required">
+          <Input type="password" v-model="formItemChangePassword.confirm"></Input>
+        </FormItem>
+      </Form>
+      <div slot="footer">
+        <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
+        <Button type="primary" @click="changePassword()">{{this.$t('commit')}}</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import SearchTable from '../../other-page/search-table.vue'
-import { getAllUser, deleteUser, updateUser, createUser, userLookup, Tree } from '../../../api/manage'
+import { getAllUser, deleteUser, updateUser, createUser, userLookup, Tree, userAuthMode, changePassword } from '../../../api/manage'
 import { forEach } from '../../../libs/tools'
 import { List } from '@/api/platform-role'
 import { hasPermission } from '@/router/permission'
@@ -86,12 +103,37 @@ export default {
   },
   mounted () {
     this.$store.commit('setClusterSelect', true)
+    this.getUserAuthMode()
     this.formatTableData()
     this.getRole()
     this.getUserTree([], [], [])
   },
   data () {
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error(this.$t('not_null')))
+      } else {
+        if (this.formItemChangePassword.password !== value) {
+          callback(new Error(this.$t('password_net_mach')))
+        }
+        callback()
+      }
+    }
     return {
+      changePasswordShow: false,
+      formItemChangePassword: {
+        password: '',
+        confirm: ''
+      },
+      ruleValidateChangePassword: {
+        password: {
+          required: true,
+          message: this.$t('not_null'),
+          trigger: 'blur'
+        },
+        confirm: [{ validator: validatePassword, trigger: 'blur' }]
+      },
+      authMode: 'local',
       userTree: [],
       userId: '',
       name: '',
@@ -113,22 +155,28 @@ export default {
         realName: '',
         userId: '',
         mail: '',
+        password: '',
         role: ''
       },
       ruleValidate: {
         name: {
           required: true,
-          message: '该项不能为空',
+          message: this.$t('not_null'),
           trigger: 'change'
         },
         realName: {
           required: true,
-          message: '该项不能为空',
+          message: this.$t('not_null'),
           trigger: 'change'
         },
         mail: {
           required: true,
-          message: '该项不能为空',
+          message: this.$t('not_null'),
+          trigger: 'change'
+        },
+        password: {
+          required: true,
+          message: this.$t('not_null'),
           trigger: 'change'
         },
         role: [
@@ -141,7 +189,7 @@ export default {
       },
       columns: [
         {
-          title: '用户名',
+          title: this.$t('name'),
           key: 'name',
           render: (h, params) => {
             return h(
@@ -156,21 +204,17 @@ export default {
             )
           }
         },
-        // {
-        //   title: 'ID',
-        //   key: 'userId'
-        // },
         {
-          title: '真实姓名',
+          title: this.$t('realName'),
           key: 'realName'
         },
         {
-          title: '邮箱',
+          title: this.$t('auth_mode'),
           key: 'mail',
           minWidth: 90
         },
         {
-          title: '产品线',
+          title: this.$t('product'),
           key: 'product',
           render: (h, params) => {
             return h(
@@ -187,7 +231,7 @@ export default {
           }
         },
         {
-          title: '角色',
+          title: this.$t('role'),
           key: 'role',
           render: (h, params) => {
             return h(
@@ -202,6 +246,10 @@ export default {
           }
         },
         {
+          title: this.$t('auth_mode'),
+          key: 'authMode'
+        },
+        {
           title: this.$t('modify_time'),
           key: 'modifyTime'
         },
@@ -212,11 +260,15 @@ export default {
           sortType: 'desc'
         },
         {
-          title: this.$t('action'),
+          title: this.$t('option'),
           key: 'action',
-          width: 130,
+          width: 200,
           align: 'center',
           render: (h, params) => {
+            let changePassword = true
+            if (hasPermission('change_pw') && params.row.authMode === 'local') {
+              changePassword = false
+            }
             return h('div', [
               h(
                 'Button',
@@ -254,6 +306,30 @@ export default {
                   }
                 },
                 this.$t('edit')
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    ghost: true,
+                    disabled: changePassword
+                  },
+                  style: {
+                    marginRight: '3px'
+                  },
+                  on: {
+                    click: () => {
+                      this.changePasswordShow = true
+                      this.$refs['changePasswordForm'].resetFields()
+                      this.title = this.$t('change_password')
+                      this.name = params.row.name
+                      this.userId = params.row.userId
+                    }
+                  }
+                },
+                this.$t('change_password')
               ),
               h(
                 'Button',
@@ -377,8 +453,10 @@ export default {
     },
     cancel () {
       this.modalShow = false
+      this.changePasswordShow = false
     },
     createBtnClick (mode) {
+      this.getUserAuthMode()
       this.handleReset('createForm')
       if (mode === 'CREATE') {
         this.updateData = null
@@ -389,15 +467,25 @@ export default {
       this.modalShow = true
       this.modalMode = mode
     },
-    createModalMsg (val) {
-      if (val === true) {
-        this.modalShow = val
-      } else if (val === false) {
-        this.modalShow = val
-      } else if (val === 2) {
-        this.modalShow = false
-        this.formatTableData()
-      }
+    changePassword () {
+      this.$refs['changePasswordForm'].validate(valid => {
+        if (valid) {
+          let params = {
+            password: this.formItemChangePassword.password,
+            userId: this.userId
+          }
+          changePassword(params).then(res => {
+            if (res.code === 200) {
+              this.$Message.success({
+                content: this.$t('action_success')
+              })
+              this.changePasswordShow = false
+            } else {
+              this.$Message.error('操作失败')
+            }
+          })
+        }
+      })
     },
     confirm () {
       this.$refs['createForm'].validate(valid => {
@@ -423,16 +511,19 @@ export default {
             cluster: cluster,
             namespace: namespace,
             role: this.formItem.role,
+            password: this.formItem.password,
+            authMode: this.authMode,
             userId: this.formItem.userId
           }
           // create
           if (this.modalMode === 'CREATE') {
             createUser(params).then(res => {
-              if (res.code === 200 && res.msg === '') {
+              if (res.code === 200) {
                 this.$Message.success({
                   content: this.$t('action_success')
                 })
-                this.createModalMsg(2)
+                this.modalShow = false
+                this.formatTableData()
               } else {
                 this.$Message.error('操作失败')
               }
@@ -440,12 +531,12 @@ export default {
           }
           if (this.modalMode === 'UPDATE') {
             updateUser(params).then(res => {
-              if (res.code === 200 && res.msg === '') {
+              if (res.code === 200) {
                 this.$Message.success({
                   content: this.$t('action_success')
                 })
-                this.createModalMsg(2)
-                this.$store.dispatch('flushSelectObj')
+                this.modalShow = false
+                this.formatTableData()
               } else {
                 this.$Message.error('操作失败')
               }
@@ -496,6 +587,7 @@ export default {
             cluster: item.cluster || [{ 'id': '', 'name': '' }],
             namespace: item.namespace || [{ 'id': '', 'name': '' }],
             role: item.role[0] || [{ 'id': '', 'name': '' }],
+            authMode: item.authMode,
             modifyTime: formatTimestamp(item.modifyTime) || '',
             create_time: formatTimestamp(item.createTime) || ''
           })
@@ -507,6 +599,15 @@ export default {
       this.formatTableData()
       this.getUserTree([], [], [])
       this.$Message.success(this.$t('refresh_success'))
+    },
+    getUserAuthMode () {
+      userAuthMode({
+        userId: this.userId
+      }).then(res => {
+        if (res.code === 200) {
+          this.authMode = res.data.mode
+        }
+      })
     }
   }
 }
