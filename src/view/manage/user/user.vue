@@ -9,7 +9,7 @@
       </SearchTable>
     </Card>
     <Modal slot="option" v-model="modalShow" :title=title>
-      <Form ref="createForm" :model="formItem" :label-width="60" :rules="ruleValidate">
+      <Form ref="createForm" :model="formItem" :label-width="70" :rules="ruleValidate">
         <FormItem label="用户名" prop="name">
           <template v-if="modalMode === 'CREATE'">
             <Row type="flex" justify="start" :gutter="12">
@@ -35,6 +35,9 @@
         </FormItem>
         <FormItem label="密码" prop="password" v-if="authMode === 'local' && modalMode === 'CREATE'">
           <Input type="password" v-model="formItem.password"></Input>
+        </FormItem>
+        <FormItem label="确认密码" class="ivu-form-item ivu-form-item-required" prop="confirm" v-if="authMode === 'local' && modalMode === 'CREATE'">
+          <Input type="password" v-model="formItem.confirm"></Input>
         </FormItem>
         <FormItem :label="this.$t('role')" prop="role">
           <Select v-model="formItem.role">
@@ -113,8 +116,14 @@ export default {
       if (value === '') {
         callback(new Error(this.$t('not_null')))
       } else {
-        if (this.formItemChangePassword.password !== value) {
-          callback(new Error(this.$t('password_net_mach')))
+        if (this.title === this.$t('add_user')) {
+          if (this.formItem.password !== value) {
+            callback(new Error(this.$t('password_net_mach')))
+          }
+        } else {
+          if (this.formItemChangePassword.password !== value) {
+            callback(new Error(this.$t('password_net_mach')))
+          }
         }
         callback()
       }
@@ -156,7 +165,8 @@ export default {
         userId: '',
         mail: '',
         password: '',
-        role: ''
+        role: '',
+        confirm: ''
       },
       ruleValidate: {
         name: {
@@ -185,7 +195,8 @@ export default {
             message: this.$t('not_null'),
             trigger: 'change'
           }
-        ]
+        ],
+        confirm: [{ validator: validatePassword, trigger: 'blur' }]
       },
       columns: [
         {
