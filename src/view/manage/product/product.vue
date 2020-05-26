@@ -165,7 +165,7 @@ export default {
           sortType: 'desc'
         },
         {
-          title: this.$t('action'),
+          title: this.$t('option'),
           key: 'action',
           width: 130,
           align: 'center',
