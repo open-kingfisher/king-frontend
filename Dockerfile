@@ -8,13 +8,9 @@ RUN set -xe \
 
 FROM nginx
 ARG NAME="king-frontend"
-ENV TZ "Asia/Shanghai"
 
 COPY --from=builder /$NAME/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /$NAME/dist/ /var/www/html/
+COPY --from=builder /$NAME/entrypoint.sh /entrypoint.sh
 
-RUN set -xe \
-    && echo "${TZ}" > /etc/timezone \
-    && ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
-
-CMD nginx -g "daemon off;"
+ENTRYPOINT ["/bin/sh","/entrypoint.sh"]
