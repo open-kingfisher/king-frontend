@@ -554,17 +554,7 @@ export const createUser = params => {
   return axios.request({
     url: KF_URL_PREFIX + 'user',
     method: 'post',
-    data: {
-      mail: params.mail,
-      mobile: params.mobile,
-      realName: params.realName,
-      name: params.name,
-      telephoneNumber: params.tel,
-      product: params.product,
-      cluster: params.cluster,
-      namespace: params.namespace,
-      role: params.role
-    }
+    data: params
   })
 }
 
@@ -594,17 +584,7 @@ export const updateUser = params => {
     params: {
       id: params.userId
     },
-    data: {
-      mail: params.mail,
-      mobile: params.mobile,
-      realName: params.realName,
-      name: params.name,
-      telephoneNumber: params.tel,
-      product: params.product,
-      cluster: params.cluster,
-      namespace: params.namespace,
-      role: params.role
-    }
+    data: params
   })
 }
 
@@ -659,5 +639,14 @@ export const Tree = params => {
   return baseAxios.request({
     url: KF_URL_PREFIX + 'cascadeAll',
     method: 'get'
+  })
+}
+
+// 认证模式
+export const userAuthMode = params => {
+  return axios.request({
+    url: KF_URL_PREFIX + 'userAuthMode',
+    method: 'get',
+    params: {}
   })
 }
