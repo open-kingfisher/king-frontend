@@ -234,7 +234,7 @@ export default {
         select_product: [
           {
             required: true,
-            message: '该项不能为空',
+            message: this.$t('not_null'),
             trigger: 'change'
           }
         ]
