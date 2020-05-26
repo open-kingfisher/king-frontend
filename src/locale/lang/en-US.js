@@ -148,5 +148,8 @@ export default {
   save: 'Save',
   connect_ldap: 'Test LDAP SERVER',
   change_password: 'Password',
-  realName: 'RealName'
+  realName: 'RealName',
+  password_net_mach: 'password not match',
+  auth_mode: 'Auth Mode',
+  mail: 'Mail'
 }
