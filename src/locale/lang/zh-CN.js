@@ -145,5 +145,10 @@ export default {
   hostIp: '节点IP',
   config: '配置管理',
   save: '保存',
-  connect_ldap: '测试LDAP服务器'
+  connect_ldap: '测试LDAP服务器',
+  change_password: '修改密码',
+  realName: '真实姓名',
+  password_net_mach: '密码不匹配',
+  auth_mode: '认证模式',
+  mail: '邮箱'
 }

@@ -146,5 +146,10 @@ export default {
   hostIp: 'Node IP',
   config: 'Config',
   save: 'Save',
-  connect_ldap: 'Test LDAP SERVER'
+  connect_ldap: 'Test LDAP SERVER',
+  change_password: 'Password',
+  realName: 'RealName',
+  password_net_mach: 'password not match',
+  auth_mode: 'Auth Mode',
+  mail: 'Mail'
 }
