@@ -588,6 +588,14 @@ export const updateUser = params => {
   })
 }
 
+export const changePassword = params => {
+  return axios.request({
+    url: KF_URL_PREFIX + 'changePassword',
+    method: 'put',
+    data: params
+  })
+}
+
 /*
 
 User lookup
