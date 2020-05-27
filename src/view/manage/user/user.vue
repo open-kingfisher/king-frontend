@@ -220,7 +220,7 @@ export default {
           key: 'realName'
         },
         {
-          title: this.$t('auth_mode'),
+          title: this.$t('mail'),
           key: 'mail',
           minWidth: 90
         },
