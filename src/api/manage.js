@@ -375,11 +375,7 @@ export const bindProductLine = params => {
   return axios.request({
     url: KF_URL_PREFIX + 'product',
     method: 'post',
-    data: {
-      id: params.productLineId,
-      cluster: params.clusterIdList,
-      namespace: params.namespaceIdList
-    }
+    data: params
   })
 }
 
@@ -433,11 +429,7 @@ export const updateProductLine = params => {
   return axios.request({
     url: KF_URL_PREFIX + 'product',
     method: 'put',
-    data: {
-      id: params.productLineId,
-      cluster: params.clusterIdList,
-      namespace: params.namespaceIdList
-    }
+    data: params
   })
 }
 
