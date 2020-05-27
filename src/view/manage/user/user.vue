@@ -277,8 +277,16 @@ export default {
           align: 'center',
           render: (h, params) => {
             let changePassword = true
-            if (hasPermission('change_pw') && params.row.authMode === 'local') {
+            let editPermission = true
+            let deletePermission = true
+            if (hasPermission('change_pw') && params.row.authMode === 'local' && params.row.authMode === this.authMode) {
               changePassword = false
+            }
+            if (hasPermission('edit_user') && params.row.authMode === this.authMode) {
+              editPermission = false
+            }
+            if (hasPermission('del_user') && params.row.authMode === this.authMode) {
+              deletePermission = false
             }
             return h('div', [
               h(
@@ -287,7 +295,7 @@ export default {
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: !hasPermission('edit_user')
+                    disabled: editPermission
                   },
                   style: {
                     marginRight: '3px'
@@ -348,7 +356,7 @@ export default {
                   props: {
                     type: 'error',
                     size: 'small',
-                    disabled: !hasPermission('del_user')
+                    disabled: deletePermission
                   },
                   on: {
                     click: () => {
