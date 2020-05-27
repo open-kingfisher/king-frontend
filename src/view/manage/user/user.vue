@@ -279,6 +279,7 @@ export default {
             let changePassword = true
             let editPermission = true
             let deletePermission = true
+            // ldap 模式不允许修改密码，不能编辑，不能删除local模式用户
             if (hasPermission('change_pw') && params.row.authMode === 'local' && params.row.authMode === this.authMode) {
               changePassword = false
             }
