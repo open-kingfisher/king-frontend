@@ -24,7 +24,7 @@
             </Row>
           </template>
           <template v-else>
-            <Input v-model="formItem.name"></Input>
+            <Input v-model="formItem.name" :disabled="modalMode !== 'CREATE'"></Input>
           </template>
         </FormItem>
         <FormItem label="姓名" prop="realName">
