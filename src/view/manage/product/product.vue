@@ -11,13 +11,11 @@
     </Card>
     <Modal slot="option" v-model="modalShow" :title=title>
       <Form ref="createForm" :model="formItem" :label-width="60"  :rules="ruleValidate" style="margin-right: 27px">
-        <FormItem label="产品线" prop="select_product">
-          <Select v-model="formItem.select_product" :disabled="modalMode === 'UPDATE'" filterable>
-              <Option v-for="item in productsData" :key="item.uuid" :value="item.uuid" >{{ item.path }}</Option>
-          </Select>
+        <FormItem label="产品线" prop="name">
+          <Input v-model="formItem.name" :disabled="modalMode !== 'CREATE'"></Input>
         </FormItem>
         <FormItem label="命名空间" prop="select_namespace">
-            <div style="overflow:auto; height: 300px; margin-top: 0px" >
+            <div style="overflow:auto; height: 350px; margin-top: 0px;">
               <Tree
                 :data="productTree"
                 show-checkbox
@@ -27,17 +25,6 @@
               ></Tree>
             </div>
         </FormItem>
-<!--        <FormItem label="命名空间" prop="select_namespace">-->
-<!--&lt;!&ndash;          https://vue-treeselect.js.org/#more-features&ndash;&gt;-->
-<!--          <treeselect v-model="value"-->
-<!--                      :multiple="true"-->
-<!--                      :options="options"-->
-<!--                      :searchable="true"-->
-<!--                      :show-count="true"-->
-<!--                      :defaultExpandLevel=1-->
-<!--                      :disable-branch-nodes="true"-->
-<!--                      placeholder="选择集群和命名空间"/>-->
-<!--        </FormItem>-->
       </Form>
       <div slot="footer">
         <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
@@ -60,7 +47,6 @@
 
 <script>
 import {
-  getAllProducts,
   getKingfisherProducts,
   getAllCluster,
   bindProductLine,
@@ -71,8 +57,6 @@ import {
 import SearchTable from '../../other-page/search-table.vue'
 import Information from '../../other-page/information.vue'
 import { forEach } from '../../../libs/tools'
-// import Treeselect from '@riophae/vue-treeselect'
-// import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { formatTimestamp } from '../../../api/tools'
 import { hasPermission } from '@/router/permission'
 
@@ -80,7 +64,6 @@ export default {
   components: {
     SearchTable,
     Information
-    // Treeselect
   },
   mounted () {
     this.$store.commit('setClusterSelect', true)
@@ -94,11 +77,8 @@ export default {
       name: '',
       deleteModel: false,
       deleteLoading: false,
-      value: null,
       options: [],
-      model12: [],
       title: '',
-      updateData: {},
       modalMode: '',
       productsData: [],
       modalData: null,
@@ -194,7 +174,8 @@ export default {
                         namespace.push(item.id)
                       })
                       this.getUserTree(cluster, namespace)
-                      this.formItem.select_product = params.row.id
+                      this.formItem.name = params.row.name
+                      this.productId = params.row.id
                     }
                   }
                 },
@@ -228,10 +209,10 @@ export default {
         height: '300px'
       },
       formItem: {
-        select_product: ''
+        name: ''
       },
       ruleValidate: {
-        select_product: [
+        name: [
           {
             required: true,
             message: this.$t('not_null'),
@@ -332,27 +313,15 @@ export default {
       this.modalShow = false
     },
     createBtnClick (mode) {
-      this.treeClusterNamespace()
       if (mode === 'CREATE') {
-        this.updateData = null
+        this.treeClusterNamespace()
+        this.$refs['createForm'].resetFields()
         this.title = this.$t('add_product')
-        this.value = []
       } else {
         this.title = this.$t('edit_product')
       }
       this.modalShow = true
       this.modalMode = mode
-      this.getProductApi()
-    },
-    createModalMsg (val) {
-      if (val === true) {
-        this.modalShow = val
-      } else if (val === false) {
-        this.modalShow = val
-      } else if (val === 2) {
-        this.modalShow = false
-        this.formatTableData()
-      }
     },
     del () {
       this.deleteLoading = true
@@ -414,71 +383,42 @@ export default {
               namespace.push(item.value)
             }
           })
+          let params = {
+            name: this.formItem.name,
+            cluster: cluster,
+            namespace: namespace
+          }
           // create
           if (this.modalMode === 'CREATE') {
-            let params = {
-              productLineId: this.formItem.select_product,
-              clusterIdList: cluster,
-              namespaceIdList: namespace
-            }
             bindProductLine(params).then(res => {
-              if (res.code === 200 && res.msg === '') {
+              if (res.code === 200) {
                 this.$Message.success({
                   content: this.$t('action_success')
                 })
-                this.createModalMsg(2)
+                this.modalShow = false
+                this.formatTableData()
                 this.$store.dispatch('flushSelectObj')
               } else {
                 this.$Message.error('操作失败')
               }
             })
-            this.value = []
           }
           if (this.modalMode === 'UPDATE') {
-            let params = {
-              productLineId: this.formItem.select_product,
-              clusterIdList: cluster,
-              namespaceIdList: namespace
-            }
+            params.id = this.productId
             updateProductLine(params).then(res => {
-              if (res.code === 200 && res.msg === '') {
+              if (res.code === 200) {
                 this.$Message.success({
                   content: this.$t('action_success')
                 })
-                this.createModalMsg(2)
+                this.modalShow = false
+                this.formatTableData()
                 this.$store.dispatch('flushSelectObj')
               } else {
                 this.$Message.error('操作失败')
               }
             })
-            this.value = []
           }
         }
-      })
-    },
-    getProductApi () {
-      getAllProducts().then(res => {
-        let pl = Object.values(res.data.SINA['2013052110474179'].BU)
-        let data = []
-        forEach(pl, (item, index) => {
-          let classOne = item.name
-          let segment = Object.values(item['Segment'])
-          forEach(segment, (item, index) => {
-            let classTwo = item.name
-            if (item['Product']) {
-              let product = Object.values(item['Product'])
-              forEach(product, (item, index) => {
-                let classThree = item.name
-                data.push({
-                  uuid: item.uuid,
-                  name: item.name,
-                  path: ['SINA', classOne, classTwo, classThree].join(' / ')
-                })
-              })
-            }
-          })
-        })
-        this.productsData = data
       })
     },
     refresh () {
