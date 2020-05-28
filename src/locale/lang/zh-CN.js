@@ -152,5 +152,7 @@ export default {
   auth_mode: '认证模式',
   mail: '邮箱',
   dynamic: '动态',
-  replicas: '副本'
+  replicas: '副本',
+  logout: '退出登录',
+  profile: '个人中心'
 }

@@ -153,5 +153,7 @@ export default {
   auth_mode: 'Auth Mode',
   mail: 'Mail',
   dynamic: 'Dynamic',
-  replicas: 'Replicas'
+  replicas: 'Replicas',
+  logout: 'Sign out',
+  profile: 'Profile'
 }
