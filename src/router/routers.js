@@ -737,10 +737,27 @@ const routes = [
         path: "/search",
         name: "search",
         meta: {
-          title: "集群管理",
           hideInMenu: true
         },
         component: () => import("@/view/search/search.vue")
+      }
+    ]
+  },
+  {
+    path: "/_profile",
+    component: Main,
+    name: "_profile",
+    meta: {
+      hideInMenu: true,
+    },
+    children: [
+      {
+        path: "/profile",
+        name: "profile",
+        meta: {
+          hideInMenu: true
+        },
+        component: () => import("@/view/manage/user/profile.vue")
       }
     ]
   },

@@ -52,6 +52,7 @@ const plugin = () => import('@/view/manage/plugin/plugin.vue')
 const audit = () => import('@/view/manage/audit/audit.vue')
 const config = () => import('@/view/manage/config/config.vue')
 const search = () => import('@/view/search/search.vue')
+const profile = () => import('@/view/manage/user/profile.vue')
 const errorPage401 = () => import('@/view/error-page/401.vue')
 const errorPage500 = () => import('@/view/error-page/500.vue')
 const errorPage404 = () => import('@/view/error-page/404.vue')
@@ -111,6 +112,7 @@ export default {
   audit,
   config,
   search,
+  profile,
   errorPage401,
   errorPage500,
   errorPage404
