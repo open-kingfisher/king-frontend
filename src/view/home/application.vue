@@ -37,12 +37,12 @@ export default {
           }
         },
         {
-          title: '副本数',
+          title: this.$t('replicas'),
           key: 'replicas',
-          width: 80
+          width: 90
         },
         {
-          title: 'Pods',
+          title: this.$t('pod'),
           key: 'pods',
           width: 80
         },
