@@ -1,7 +1,10 @@
 <template>
   <div class="count-to-wrapper">
     <slot name="left"/>
-    <p class="content-outer"><span :class="['count-to-count-text', countClass]" :id="counterId">{{ init }}</span><i :class="['count-to-unit-text', unitClass]">{{ unitText }}</i></p>
+    <p class="content-outer">
+      <span :class="['count-to-count-text', countClass]" :id="counterId">{{ init }}</span>
+      <i :class="['count-to-unit-text', unitClass]">{{ unitText }}</i>
+    </p>
     <slot name="right"/>
   </div>
 </template>
@@ -103,6 +106,10 @@ export default {
     unitClass: {
       type: String,
       default: ''
+    },
+    counterId: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -111,11 +118,11 @@ export default {
       unitText: ''
     }
   },
-  computed: {
-    counterId () {
-      return `count_to_${this._uid}`
-    }
-  },
+  // computed: {
+  //   counterId () {
+  //     return `count_to_${this._uid}`
+  //   }
+  // },
   methods: {
     getHandleVal (val, len) {
       return {
@@ -154,9 +161,10 @@ export default {
     this.$nextTick(() => {
       setTimeout(() => {
         let endVal = this.getValue(this.end)
+        console.log(this.counterId, this.startVal, endVal, this.decimals, this.duration)
         this.counter = new CountUp(this.counterId, this.startVal, endVal, this.decimals, this.duration, {
           useEasing: !this.uneasing,
-          useGrouping: this.useGroup,
+          useGrouping: this.usegroup,
           separator: this.separator,
           decimal: this.decimal
         })

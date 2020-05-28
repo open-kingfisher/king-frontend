@@ -9,13 +9,13 @@
       <i-col span="16">
         <i-col span="6" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px; padding-right: 10px">
           <info-card shadow :color="infor.color" :icon="infor.icon" :icon-size="36">
-            <count-to :end="infor.count" count-class="count-style"/>
+            <count-to :end="infor.count" :counterId="infor.title" count-class="count-style"/>
             <p>{{ infor.title }}</p>
           </info-card>
         </i-col>
         <i-col span="24" style="margin-top: 20px; padding-right: 10px">
           <Card shadow>
-            <p slot="title">应用</p>
+            <p slot="title">{{this.$t('deployment')}}</p>
             <application></application>
           </Card>
         </i-col>
@@ -26,7 +26,7 @@
 <!--          <example style="height: 240px;"/>-->
 <!--        </Card>-->
          <Card shadow style="margin-top: 0px;">
-          <p slot="title">动态</p>
+          <p slot="title">{{this.$t('dynamic')}}</p>
           <time-line style="padding: 15px 15px 9px 15px;"></time-line>
         </Card>
       </i-col>
