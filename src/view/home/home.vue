@@ -13,7 +13,7 @@
             <p>{{ infor.title }}</p>
           </info-card>
         </i-col>
-        <i-col span="24" style="margin-top: 20px; padding-right: 10px">
+        <i-col span="24" style="margin-top: 10px; padding-right: 10px">
           <Card shadow>
             <p slot="title">{{this.$t('deployment')}}</p>
             <application></application>
@@ -24,6 +24,10 @@
 <!--        <Card shadow>-->
 <!--          <p slot="title">状态比例</p>-->
 <!--          <example style="height: 240px;"/>-->
+<!--        </Card>-->
+<!--        <Card shadow>-->
+<!--          <p slot="title">状态比例</p>-->
+<!--          <pod style="height: 240px;"/>-->
 <!--        </Card>-->
          <Card shadow style="margin-top: 0px;">
           <p slot="title">{{this.$t('dynamic')}}</p>
@@ -58,6 +62,7 @@ import CountTo from '../components/count-to'
 import Application from './application.vue'
 import TimeLine from './timeline.vue'
 import Example from './example.vue'
+import Pod from './pod.vue'
 export default {
   name: 'home',
   components: {
@@ -65,7 +70,8 @@ export default {
     CountTo,
     Application,
     TimeLine,
-    Example
+    Example,
+    Pod
   },
   data () {
     return {
@@ -74,7 +80,8 @@ export default {
         { title: this.$t('deployment'), icon: 'ios-cloud-download-outline', count: 0, color: '#9A66E4' },
         { title: this.$t('service'), icon: 'ios-timer-outline', count: 0, color: '#ff9900' },
         { title: this.$t('ingress'), icon: 'ios-settings-outline', count: 0, color: '#E46CBB' }
-      ]
+      ],
+      statusPod: []
     }
   },
   mounted () {
