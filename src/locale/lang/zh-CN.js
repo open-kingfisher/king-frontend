@@ -150,5 +150,7 @@ export default {
   realName: '真实姓名',
   password_net_mach: '密码不匹配',
   auth_mode: '认证模式',
-  mail: '邮箱'
+  mail: '邮箱',
+  dynamic: '动态',
+  replicas: '副本'
 }

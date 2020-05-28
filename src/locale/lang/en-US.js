@@ -151,5 +151,7 @@ export default {
   realName: 'RealName',
   password_net_mach: 'password not match',
   auth_mode: 'Auth Mode',
-  mail: 'Mail'
+  mail: 'Mail',
+  dynamic: 'Dynamic',
+  replicas: 'Replicas'
 }
