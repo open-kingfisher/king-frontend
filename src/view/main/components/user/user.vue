@@ -7,7 +7,8 @@
         <Icon :size="18" type="md-arrow-dropdown"></Icon>
       </a>
       <DropdownMenu slot="list">
-        <DropdownItem name="logout" style="text-align: center">退出登录</DropdownItem>
+        <DropdownItem name="profile" style="text-align: center">{{this.$t('profile')}}</DropdownItem>
+        <DropdownItem name="logout" style="text-align: center">{{this.$t('logout')}}</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -35,6 +36,11 @@ export default {
             this.$router.push({
               name: 'login'
             })
+          })
+          break
+        case 'profile':
+          this.$router.push({
+            name: 'profile'
           })
           break
       }
