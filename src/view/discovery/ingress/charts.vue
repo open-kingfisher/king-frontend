@@ -255,7 +255,6 @@ export default {
           }
           _this.$router.push(route)
         } else if (params.data.rank === 'service' && hasPermission('service')) {
-          console.log(name.split(':')[0])
           const route = {
             name: 'serviceinfo',
             params: {
