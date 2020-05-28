@@ -161,7 +161,6 @@ export default {
     this.$nextTick(() => {
       setTimeout(() => {
         let endVal = this.getValue(this.end)
-        console.log(this.counterId, this.startVal, endVal, this.decimals, this.duration)
         this.counter = new CountUp(this.counterId, this.startVal, endVal, this.decimals, this.duration, {
           useEasing: !this.uneasing,
           useGrouping: this.usegroup,
