@@ -42,3 +42,10 @@ export const getHistory = (params) => {
     method: 'get'
   })
 }
+
+export const getPodStatus = (params) => {
+  return axios.request({
+    url: K8S_URL_PREFIX + 'dashboard/podStatus',
+    method: 'get'
+  })
+}
