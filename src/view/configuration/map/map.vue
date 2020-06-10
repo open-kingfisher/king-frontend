@@ -328,8 +328,10 @@ export default {
           // 上传文件的from的键为文件名
           for (let i = 0; i < this.formDynamicKV.files.length; i++) {
             let item = this.formDynamicKV.files[i]
-            formData.append(item['fileName'], item['fileObject'])
-            fileName.push(item['fileName'])
+            if (item['fileName']) {
+              formData.append(item['fileName'], item['fileObject'])
+              fileName.push(item['fileName'])
+            }
           }
           // 给后端传递文件名，以便后端通过键值获取文件内容
           formData.append('fileName', JSON.stringify(fileName))
