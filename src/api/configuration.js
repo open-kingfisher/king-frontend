@@ -52,14 +52,10 @@ export const updateConfMap = params => {
     params: {
       namespace: params.namespace,
       productId: params.productId,
+      name: params.mapName,
       type: 'json'
     },
-    data: {
-      metadata: {
-        name: params.mapname
-      },
-      data: params.createJson
-    }
+    data: params.formData
   })
 }
 
@@ -87,14 +83,10 @@ export const createConfMap = params => {
     params: {
       namespace: params.namespace,
       productId: params.productId,
+      name: params.mapName,
       type: 'json'
     },
-    data: {
-      metadata: {
-        name: params.mapname
-      },
-      data: params.createJson
-    }
+    data: params.formData
   })
 }
 
