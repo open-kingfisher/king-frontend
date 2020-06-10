@@ -284,6 +284,7 @@
                 <Button @click="handleAdd('secretVolume')">保密字典</Button>
                 <Button @click="handleAdd('configMapVolume')">配置字典</Button>
                 <Button @click="handleAdd('cephFSVolume')">CephFS</Button>
+                <Button @click="handleAdd('emptyDir')">空目录</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -389,45 +390,32 @@
             </Row>
           </FormItem>
         </div>
-        <!--
-        <div v-for="(item, emptyDirIndex) in formItemVolume.emptyDir" :key="emptyDirIndex + 'emptyDir'" :value="item" v-if="formItemVolume.volumeDisplay === 1">
+        <div style="margin-left: 60px" v-for="(item, emptyDirIndex) in formItemVolume.emptyDir" :key="emptyDirIndex + 'emptyDir'" :value="item" v-if="formItemVolume.volumeDisplay === 1">
           <FormItem  label="空目录">
             <Row type="flex" justify="space-between">
-              <Col span="5">
+              <Col span="15">
                 <FormItem>
                   <Input v-model="item.name">
-                     <span slot="prepend">名称</span>
-                  </Input>
-                </FormItem>
-              </Col>
-              <Col span="9">
-                <FormItem>
-                   <Input v-model="item.path">
-                     <span slot="prepend">路径</span>
+                     <span slot="prepend">卷名</span>
                   </Input>
                 </FormItem>
               </Col>
               <Col span="7">
                 <FormItem>
-                   <Select v-model="item.storageMedium">
-                    <Option value="">Empty</Option>
+                   <Select v-model="item.emptyDir.medium">
+                    <Option value="Empty">Empty</Option>
                     <Option value="Memory">Memory</Option>
-                    <Option value="directory">HugePages</Option>
+                    <Option value="HugePages">HugePages</Option>
                    </Select>
                 </FormItem>
               </Col>
               <Col span="1" offset="0" style="margin-right: 0px">
-                <Button type="dashed" @click="handleRemove('emptyDirVolume',emptyDirIndex)" :disabled= "formItemVolume.emptyDir.length === 1" icon="md-trash">
-                </Button>
-              </Col>
-              <Col span="1" offset="0" style="margin-right: 0px">
-                <Button type="dashed" @click="handleAdd('emptyDirVolume', emptyDirIndex)" icon="md-add">
+                <Button type="dashed" @click="handleRemove('emptyDirVolume',emptyDirIndex)" icon="md-trash">
                 </Button>
               </Col>
             </Row>
           </FormItem>
         </div>
-        -->
         <div style="margin-left: 60px" v-for="(item, cephFSIndex) in formItemVolume.cephFS"
              :key="cephFSIndex + 'cephFS'" :value="item" v-if="formItemVolume.volumeDisplay === 1">
           <FormItem :label="cephFSIndex === 0 ? 'CephFS': ''">
@@ -2606,7 +2594,8 @@ export default {
       if (this.formItemVolume.secret.length === 0 &&
         this.formItemVolume.configMap.length === 0 &&
         this.formItemVolume.hostPath.length === 0 &&
-        this.formItemVolume.cephFS.length === 0) {
+        this.formItemVolume.cephFS.length === 0 &&
+        this.formItemVolume.emptyDir.length === 0) {
         this.formItemVolume.volumeDisplay = 0
       }
     },
@@ -2661,6 +2650,14 @@ export default {
                 })
               }
             })
+            this.formItemVolume.emptyDir.forEach((item, index) => {
+              if (item.name) {
+                this.volumeName.push({
+                  name: item.name,
+                  type: '空目录'
+                })
+              }
+            })
           }
         })
       } else if (this.current === 2) {
@@ -2695,6 +2692,10 @@ export default {
       }
       if (type === 'cephFSVolume') {
         this.formItemVolume.cephFS.splice(index, 1)
+        this.hideVolume()
+      }
+      if (type === 'emptyDirVolume') {
+        this.formItemVolume.emptyDir.splice(index, 1)
         this.hideVolume()
       }
       if (type === 'ports') {
@@ -2796,6 +2797,14 @@ export default {
           monitors: '',
           secretRef: {
             name: ''
+          }
+        })
+      }
+      if (type === 'emptyDir') {
+        this.formItemVolume.emptyDir.push({
+          name: '',
+          emptyDir: {
+            medium: 'Empty'
           }
         })
       }
@@ -3180,6 +3189,16 @@ export default {
                 'secretRef': {
                   'name': item.secretRef.name
                 }
+              }
+            })
+          })
+        }
+        if (this.formItemVolume.emptyDir.length > 0) {
+          this.formItemVolume.emptyDir.forEach((item, index) => {
+            json.spec.template.spec.volumes.push({
+              'name': item.name,
+              'emptyDir': {
+                'medium': item.emptyDir.medium === 'Empty' ? '' : item.emptyDir.medium
               }
             })
           })
@@ -3793,6 +3812,7 @@ export default {
       this.formItemVolume.secret = []
       this.formItemVolume.hostPath = []
       this.formItemVolume.cephFS = []
+      this.formItemVolume.emptyDir = []
       if (res.data.spec.template.spec.volumes) {
         this.formItemVolume.volumeDisplay = 1
         res.data.spec.template.spec.volumes.forEach((item, index) => {
@@ -3826,6 +3846,14 @@ export default {
               monitors: item.cephfs.monitors.join(';'),
               secretRef: {
                 name: item.cephfs.secretRef.name
+              }
+            })
+          }
+          if (item.emptyDir) {
+            this.formItemVolume.emptyDir.push({
+              name: item.name,
+              emptyDir: {
+                medium: item.emptyDir.medium ? item.emptyDir.medium : 'Empty'
               }
             })
           }
