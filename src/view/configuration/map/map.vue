@@ -9,51 +9,81 @@
         </ButtonGroup>
       </SearchTable>
     </Card>
-    <Modal slot="option" v-model="modalShow" :title="title">
-        <Form ref="formDynamicKV" :model="formDynamicKV" :label-width="60" :rules="ruleValidate">
-          <FormItem label="名称" prop="mapName">
-            <Input v-model="formDynamicKV.mapName" placeholder="请输入配置字典名称" :disabled="disabled">
-            </Input>
-          </FormItem>
-          <div v-for="(item, index) in formDynamicKV.items" :key="index" :value="item">
-            <FormItem
-            :label="'键值对'"
-            :prop="'items.' + index + '.key'"
-            :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
+    <Modal slot="option" v-model="modalShow" :title="title" width="900">
+      <Form ref="formDynamicKV" :model="formDynamicKV" :label-width="50" :rules="ruleValidate">
+        <FormItem label="名称" prop="mapName">
+          <Input v-model="formDynamicKV.mapName" placeholder="请输入配置字典名称" :disabled="disabled">
+          </Input>
+        </FormItem>
+        <FormItem label="类型">
+          <Row type="flex" justify="space-between">
+            <Col span="12">
+              <ButtonGroup>
+                <Button @click="handleAdd('formDynamicKV')">键值对</Button>
+                <Button @click="handleAdd('fromFile')">文件</Button>
+              </ButtonGroup>
+            </Col>
+          </Row>
+        </FormItem>
+        <div v-for="(item, index) in formDynamicKV.items" :key="index + 'kv'" :value="item">
+          <hr style="height:1px;border:none;border-top:1px dashed #dcdee2;margin-bottom: 15px; margin-left: 35px" v-if="index !== 0"/>
+          <FormItem style="margin-left: 35px" label="键" :prop="'items.' + index + '.key'"
+                    :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
             <Row type="flex" justify="space-between">
-              <Col span="21">
-                <Input v-model="item.key" placeholder="请输入键">
-                </Input>
+              <Col span="22">
+                <FormItem>
+                  <Input v-model="item.key" placeholder="请输入键">
+                  </Input>
+                </FormItem>
               </Col>
-              <Col span="3" offset="0" style="margin-right: -9px">
+              <Col span="1" offset="0" style="margin-right: 0px">
                 <Button type="dashed" @click="handleRemove('formDynamicKV',index)" icon="md-trash">
                 </Button>
               </Col>
             </Row>
           </FormItem>
-            <FormItem
-            :key="index"
-            :prop="'items.' + index + '.val'"
-            :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
+          <FormItem style="margin-left: 35px" label="值" :prop="'items.' + index + '.val'"
+                    :rules="{required: true, message: '该项不能为空', trigger: 'blur'}">
             <Row type="flex" justify="space-between">
-              <Col span="21">
-                <Input v-model="item.val" type="textarea" :autosize="{minRows: 1,maxRows: 50}" placeholder="请输入值">
-                </Input>
+              <Col span="22">
+                <FormItem>
+                  <Input v-model="item.val" type="textarea" :autosize="{minRows: 1,maxRows: 50}" placeholder="请输入值">
+                  </Input>
+                </FormItem>
               </Col>
             </Row>
           </FormItem>
-          </div>
-          <FormItem>
-            <Row>
-              <Button type="dashed" long @click="handleAdd('formDynamicKV')" icon="md-add"></Button>
+        </div>
+        <div v-for="(item, index) in formDynamicKV.files" :key="index + 'file'" :value="item">
+          <hr style="height:1px;border:none;border-top:1px dashed #dcdee2;margin-bottom: 15px; margin-left: 35px"/>
+          <FormItem label="文件" style="margin-left: 35px">
+            <Row type="flex" justify="space-between">
+              <Col span="22">
+                <FormItem>
+                  <label class="ivu-btn ivu-btn-dashed" icon="md-cloud-upload" :for="'uploadFile' + index"
+                         style="padding-top: 6px;">上传文件</label>
+                  <input :id="'uploadFile' + index" style="display: none" type="file" v-on:change="handleFileUpload($event, index)">
+                  <span v-if="fileName" style="margin-left: 10px">{{fileName[index]}}</span>
+                </FormItem>
+              </Col>
+              <Col span="1" offset="0" style="margin-right: 0px">
+                <Button type="dashed" @click="handleRemove('fromFile',index)" icon="md-trash">
+                </Button>
+              </Col>
             </Row>
           </FormItem>
-        </Form>
-        <div slot="footer">
-          <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
-          <Button type="primary" @click="confirm()">{{this.$t('commit')}}</Button>
         </div>
-      </Modal>
+<!--        <FormItem>-->
+<!--          <Row>-->
+<!--            <Button type="dashed" long @click="handleAdd('formDynamicKV')" icon="md-add"></Button>-->
+<!--          </Row>-->
+<!--        </FormItem>-->
+      </Form>
+      <div slot="footer">
+        <Button type="text" @click="cancel()">{{this.$t('cancel')}}</Button>
+        <Button type="primary" @click="confirm()">{{this.$t('commit')}}</Button>
+      </div>
+    </Modal>
     <Modal v-model="deleteModel" width="360">
       <p slot="header" title="删除">
           <span>{{this.$t('delete')}}</span>
@@ -95,6 +125,7 @@ export default {
   },
   data () {
     return {
+      fileName: [],
       name: '',
       deleteModel: false,
       deleteLoading: false,
@@ -115,6 +146,13 @@ export default {
           {
             val: '',
             key: '',
+            index: 1
+          }
+        ],
+        files: [
+          {
+            fileName: '',
+            fileObject: '',
             index: 1
           }
         ]
@@ -140,7 +178,7 @@ export default {
               Object.keys(params.row.kv).map(item => {
                 let confVal = params.row.kv[item].length
                 if (confVal > 100) {
-                  return h('li', item + '：' + '内容过长，请去详细中查看')
+                  return h('li', item + '：' + '内容过长，请去编辑中查看')
                 } else {
                   return h('li', item + ':' + params.row.kv[item])
                 }
@@ -194,6 +232,8 @@ export default {
                             index: this.formDynamicKV.length + 1
                           })
                         }
+                        this.formDynamicKV.files = []
+                        this.fileName = []
                       })
                     }
                   }
@@ -225,7 +265,20 @@ export default {
     }
   },
   methods: {
+    handleFileUpload (event, index) {
+      event.preventDefault()
+      let tag = '#uploadFile' + index
+      // this.fileName = $('#uploadFile')[0].files[0].name
+      this.formDynamicKV.files[index] = {
+        fileName: $(tag)[0].files[0].name,
+        fileObject: $(tag)[0].files[0],
+        index: index
+      }
+      this.fileName.splice(index, 1)
+      this.fileName.push($(tag)[0].files[0].name)
+    },
     createBtnClick (mode) {
+      this.fileName = []
       this.handleReset('formDynamicKV')
       this.title = '添加配置字典'
       this.modalShow = true
@@ -234,11 +287,31 @@ export default {
     },
     handleReset (name) {
       this.$refs[name].resetFields()
+      this.formDynamicKV = {
+        mapName: '',
+        items: [
+          {
+            val: '',
+            key: '',
+            index: 1
+          }
+        ],
+        files: [
+          {
+            fileName: '',
+            fileObject: '',
+            index: 1
+          }
+        ]
+      }
     },
     confirm () {
       this.$refs['formDynamicKV'].validate(valid => {
         if (valid) {
           let createJson = {}
+          let formData = new FormData()
+          let kv = {}
+          let fileName = []
           for (let i = 0; i < this.formDynamicKV.items.length; i++) {
             let item = this.formDynamicKV.items[i]
             if (!item.key || !item.val) {
@@ -247,14 +320,25 @@ export default {
               })
               return
             } else {
-              createJson[item['key']] = item['val']
+              kv[item['key']] = item['val']
             }
           }
+          // KV直接已字典的字符串方式传递
+          formData.append('kv', JSON.stringify(kv))
+          // 上传文件的from的键为文件名
+          for (let i = 0; i < this.formDynamicKV.files.length; i++) {
+            let item = this.formDynamicKV.files[i]
+            formData.append(item['fileName'], item['fileObject'])
+            fileName.push(item['fileName'])
+          }
+          // 给后端传递文件名，以便后端通过键值获取文件内容
+          formData.append('fileName', JSON.stringify(fileName))
           let params = {
             productId: 100,
             namespace: this.$store.getters.currentNamespaceName,
-            mapname: this.formDynamicKV.mapName,
-            createJson: createJson
+            mapName: this.formDynamicKV.mapName,
+            createJson: createJson,
+            formData: formData
           }
           if (this.option === '0') {
             createConfMap(params).then(res => {
@@ -297,13 +381,26 @@ export default {
         this.formDynamicKV.items.push({
           val: '',
           key: '',
-          index: this.formDynamicKV.length + 1
+          index: this.formDynamicKV.items.length + 1
         })
+      }
+      if (type === 'fromFile') {
+        this.formDynamicKV.files.push({
+          fileName: '',
+          fileObject: '',
+          index: this.formDynamicKV.files.length + 1
+        })
+        // this.fileName.splice(this.formDynamicKV.files.length + 1, 1)
+        console.log(this.fileName)
       }
     },
     handleRemove (type, index) {
       if (type === 'formDynamicKV') {
         this.formDynamicKV.items.splice(index, 1)
+      }
+      if (type === 'fromFile') {
+        this.formDynamicKV.files.splice(index, 1)
+        this.fileName.splice(index, 1)
       }
     },
     cancel () {
