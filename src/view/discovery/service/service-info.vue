@@ -42,7 +42,7 @@
   </div>
 </template>
 <script>
-import { getOneService, listPodByService } from '@/api/discovery'
+import { getOneService, endpointList } from '@/api/discovery'
 import { delPod } from '../../../api/cluster'
 import { formatDate } from '@/api/tools'
 import SearchTable from '../../other-page/search-table.vue'
@@ -145,20 +145,20 @@ export default {
         }
       ],
       podColumns: [
+        // {
+        //   title: '容器',
+        //   type: 'expand',
+        //   width: 60,
+        //   render: (h, params) => {
+        //     return h(ExpandTable, {
+        //       props: {
+        //         row: params.row
+        //       }
+        //     })
+        //   }
+        // },
         {
-          title: '容器',
-          type: 'expand',
-          width: 60,
-          render: (h, params) => {
-            return h(ExpandTable, {
-              props: {
-                row: params.row
-              }
-            })
-          }
-        },
-        {
-          title: '名称',
+          title: '容器名',
           key: 'name',
           render: (h, params) => {
             return h(
@@ -168,7 +168,7 @@ export default {
                   to: {
                     name: 'podinfo',
                     params: {
-                      podName: params.row.name
+                      podName: params.row.name ? params.row.name : ' '
                     }
                   }
                 }
@@ -182,42 +182,46 @@ export default {
           key: 'ip'
         },
         {
-          title: this.$t('status'),
-          key: 'status',
-          render: (h, params) => {
-            let color = 'success'
-            if (params.row.status === 'Running') {
-              color = 'success'
-            } else if (params.row.status === 'Pending') {
-              color = 'warning'
-            } else {
-              color = 'error'
-            }
-            return h(
-              'Tag',
-              {
-                props: {
-                  color: color
-                }
-              },
-              params.row.status
-            )
-          }
+          title: '端口',
+          key: 'port'
         },
         // {
-        //   title: '命名空间',
-        //   key: 'namespace'
+        //   title: this.$t('status'),
+        //   key: 'status',
+        //   render: (h, params) => {
+        //     let color = 'success'
+        //     if (params.row.status === 'Running') {
+        //       color = 'success'
+        //     } else if (params.row.status === 'Pending') {
+        //       color = 'warning'
+        //     } else {
+        //       color = 'error'
+        //     }
+        //     return h(
+        //       'Tag',
+        //       {
+        //         props: {
+        //           color: color
+        //         }
+        //       },
+        //       params.row.status
+        //     )
+        //   }
         // },
+        {
+          title: '命名空间',
+          key: 'namespace'
+        },
         {
           title: this.$t('node'),
           key: 'node'
         },
-        {
-          title: '启动时间',
-          key: 'startTime',
-          sortable: true,
-          sortType: 'desc'
-        },
+        // {
+        //   title: '启动时间',
+        //   key: 'startTime',
+        //   sortable: true,
+        //   sortType: 'desc'
+        // },
         {
           title: this.$t('option'),
           key: 'action',
@@ -231,7 +235,7 @@ export default {
                   props: {
                     type: 'error',
                     size: 'small',
-                    disabled: !hasPermission('del_service_pod')
+                    disabled: !hasPermission('del_service_pod') || params.row.name === ''
                   },
                   on: {
                     click: () => {
@@ -321,16 +325,29 @@ export default {
         productId: 100,
         name: this.servicename
       }
-      listPodByService(params).then(res => {
-        forEach(res.data.items, (item, index) => {
-          this.podData.push({
-            name: item.metadata.name,
-            ip: item.status.podIP,
-            status: item.status.phase,
-            namespace: item.metadata.namespace,
-            node: item.spec.nodeName,
-            startTime: formatDate(item.status.startTime),
-            container: item.spec.containers
+      endpointList(params).then(res => {
+        forEach(res.data.subsets, (item, index) => {
+          // this.podData.push({
+          //   name: item.metadata.name,
+          //   ip: item.status.podIP,
+          //   status: item.status.phase,
+          //   namespace: item.metadata.namespace,
+          //   node: item.spec.nodeName,
+          //   startTime: formatDate(item.status.startTime),
+          //   container: item.spec.containers
+          // })
+          let ports = []
+          forEach(item.ports, (port, index1) => {
+            ports.push(port.port)
+          })
+          forEach(item.addresses, (addresses, index1) => {
+            this.podData.push({
+              name: addresses.targetRef ? addresses.targetRef.name : '',
+              ip: addresses.ip,
+              namespace: addresses.targetRef ? addresses.targetRef.namespace : '',
+              node: addresses.nodeName ? addresses.nodeName : '',
+              port: ports.join(' ')
+            })
           })
         })
       })

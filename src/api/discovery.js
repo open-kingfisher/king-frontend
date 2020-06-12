@@ -313,3 +313,12 @@ export const listPodByService = (params) => {
     }
   })
 }
+export const endpointList = (params) => {
+  return axios.request({
+    url: K8S_URL_PREFIX + 'endpoint/' + params.name,
+    method: 'get',
+    params: {
+      productId: params.productId
+    }
+  })
+}
