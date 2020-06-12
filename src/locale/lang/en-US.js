@@ -155,5 +155,6 @@ export default {
   dynamic: 'Dynamic',
   replicas: 'Replicas',
   logout: 'Sign out',
-  profile: 'Profile'
+  profile: 'Profile',
+  restart: 'Restart'
 }

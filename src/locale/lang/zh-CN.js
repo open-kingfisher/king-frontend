@@ -154,5 +154,6 @@ export default {
   dynamic: '动态',
   replicas: '副本',
   logout: '退出登录',
-  profile: '个人中心'
+  profile: '个人中心',
+  restart: '重启'
 }
