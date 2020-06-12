@@ -85,6 +85,18 @@
         <Button type="error" size="large" long :loading="deleteLoading" @click="del()">{{this.$t('delete')}}</Button>
       </div>
     </Modal>
+    <Modal v-model="restartModel" width="360">
+      <p slot="header" title="重启">
+        <span>{{this.$t('delete')}}</span>
+      </p>
+      <div style="text-align:center">
+        <p style="line-height: 35px; margin-bottom: 10px">确认重启 <strong
+          style="color:#f60;text-align:center">{{ctrl}}</strong> 吗？</p>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" long :loading="restartLoading" @click="restart()">{{this.$t('restart')}}</Button>
+      </div>
+    </Modal>
     <Modal v-model="scaleModel" width="500" :title="optionTitle">
       <div style="text-align:center; margin-bottom: 30px">
         <Slider v-model="replicas" show-input :max="500"></Slider>
@@ -1535,6 +1547,7 @@ import {
   createController,
   createTemplate,
   deleteController,
+  restartController,
   formCreateController,
   getControllerInfo,
   getOneControllerInfo,
@@ -1876,6 +1889,8 @@ export default {
       // Advanced Add Model End
       replicas: 0,
       deleteModel: false,
+      restartModel: false,
+      restartLoading: false,
       scaleModel: false,
       deleteLoading: false,
       setArray: {
@@ -2130,6 +2145,22 @@ export default {
                 }, [
                   h('DropdownItem', {
                     props: {
+                      disabled: !hasPermission('restart_dep')
+                    },
+                    nativeOn: {
+                      click: () => {
+                        if (hasPermission('restart_dep')) {
+                          this.restartModel = true
+                          this.restartLoading = false
+                          this.resourceName = params.row.id
+                          this.setName = params.row.setName
+                          this.ctrl = params.row.name
+                        }
+                      }
+                    }
+                  }, this.$t('restart')),
+                  h('DropdownItem', {
+                    props: {
                       disabled: !hasPermission('copy_dep')
                     },
                     nativeOn: {
@@ -2371,6 +2402,25 @@ export default {
           this.deleteModel = false
         } else {
           this.deleteLoading = false
+        }
+      })
+    },
+    restart () {
+      this.restartLoading = true
+      restartController({
+        productId: 100,
+        setName: this.setName,
+        ctrl: this.ctrl
+      }).then(res => {
+        if (res.code === 200) {
+          this.$Message.success({
+            content: this.$t('action_success')
+          })
+          this.formatTableData()
+          this.restartLoading = false
+          this.restartModel = false
+        } else {
+          this.restartLoading = false
         }
       })
     },

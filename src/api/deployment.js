@@ -1,5 +1,6 @@
 import { axios } from '../libs/api.new.request'
 import { K8S_URL_PREFIX } from '../../config/conf'
+import { formatTimestamp } from '@/api/tools'
 /** ********************************** Controller **************************************************/
 /*
 1、获取指定Namespace下Controller
@@ -526,6 +527,26 @@ export const getNamespaceLabel = (params) => {
     method: 'get',
     params: {
       productId: params.productId
+    }
+  })
+}
+
+export const restartController = (params) => {
+  let timestamp = parseInt(new Date().getTime() / 1000)
+  return axios.request({
+    url: K8S_URL_PREFIX + 'controller/' + params.setName + '/patch/' + params.ctrl,
+    method: 'patch',
+    params: {
+      productId: params.productId
+    },
+    data: {
+      'patches': [
+        {
+          'op': 'add',
+          'path': '/spec/template/metadata/annotations/kingfihser.io~1restartedAt',
+          'value': formatTimestamp(timestamp)
+        }
+      ]
     }
   })
 }
