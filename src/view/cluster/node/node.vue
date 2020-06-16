@@ -220,32 +220,63 @@ export default {
         {
           title: this.$t('status'),
           key: 'status',
-          width: 130,
           render: (h, params) => {
-            let color = 'success'
-            let text = ''
-            params.row.status.forEach((value, index) => {
-              if (value.type === 'Ready') {
-                if (value.status === 'True') {
-                  text = '正常'
-                  color = 'success'
-                } else if (value.status === 'False') {
-                  text = '失败'
-                  color = 'error'
-                } else {
-                  text = '未知'
-                  color = 'warning'
-                }
-              }
-            })
             return h(
-              'Tag',
+              'ul',
               {
-                props: {
-                  color: color
+                style: {
+                  listStyle: 'none'
                 }
               },
-              text
+              Object.values(params.row.status).map(item => {
+                let color = 'error'
+                let text = ''
+                if (item.type === 'MemoryPressure') {
+                  text = '内存压力'
+                }
+                if (item.type === 'DiskPressure') {
+                  text = '硬盘压力'
+                }
+                if (item.type === 'PIDPressure') {
+                  text = 'PID压力'
+                }
+                if (item.type === 'MemoryPressure') {
+                  text = '内存压力'
+                }
+                if (item.type === 'MemoryPressure' && item.status === 'False') {
+                  return
+                }
+                if (item.type === 'DiskPressure' && item.status === 'False') {
+                  return
+                }
+                if (item.type === 'PIDPressure' && item.status === 'False') {
+                  return
+                }
+                if (item.type === 'Ready') {
+                  if (item.status === 'True') {
+                    text = '正常'
+                    color = 'success'
+                  } else if (item.status === 'False') {
+                    text = '失败'
+                    color = 'error'
+                  } else {
+                    text = '未知'
+                    color = 'warning'
+                  }
+                }
+                return h(
+                  'Tag',
+                  {
+                    style: {
+                      textAlign: 'center'
+                    },
+                    props: {
+                      color: color
+                    }
+                  },
+                  text
+                )
+              })
             )
           }
         },
