@@ -532,21 +532,12 @@ export const getNamespaceLabel = (params) => {
 }
 
 export const restartController = (params) => {
-  let timestamp = parseInt(new Date().getTime() / 1000)
+  // let timestamp = parseInt(new Date().getTime() / 1000)
   return axios.request({
-    url: K8S_URL_PREFIX + 'controller/' + params.setName + '/patch/' + params.ctrl,
+    url: K8S_URL_PREFIX + 'controller/' + params.setName + '/restart/' + params.ctrl,
     method: 'patch',
     params: {
       productId: params.productId
-    },
-    data: {
-      'patches': [
-        {
-          'op': 'add',
-          'path': '/spec/template/metadata/annotations/kingfihser.io~1restartedAt',
-          'value': formatTimestamp(timestamp)
-        }
-      ]
     }
   })
 }
