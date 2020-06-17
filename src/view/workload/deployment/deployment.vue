@@ -1968,7 +1968,21 @@ export default {
         {
           title: this.$t('pod'),
           key: 'conPercent',
-          width: 100
+          width: 150,
+          render: (h, params) => {
+            return h(
+              'Tag',
+              {
+                style: {
+                  textAlign: 'center'
+                },
+                props: {
+                  color: params.row.conPercent.split('/')[0] !== '0 ' ? 'warning' : 'success'
+                }
+              },
+              params.row.conPercent
+            )
+          }
         },
         {
           title: this.$t('image'),
@@ -2434,6 +2448,7 @@ export default {
           let updateTime = ''
           let progressing = 0
           let available = 0
+          let conPercent = '0 / 0 / 0'
           if (item.status.conditions) {
             item.status.conditions.forEach((conditions, i) => {
               if (conditions.type === 'Progressing') {
@@ -2449,11 +2464,20 @@ export default {
               }
             })
           }
+          if (setName === 'deployment') {
+            conPercent = (item.status.unavailableReplicas || '0') + ' / ' + (item.status.readyReplicas || '0') + ' / ' + (item.spec.replicas || '0')
+          }
+          if (setName === 'statefulset') {
+            conPercent = (item.status.replicas - item.status.readyReplicas) + ' / ' + (item.status.readyReplicas || '0') + ' / ' + (item.spec.replicas || '0')
+          }
+          if (setName === 'daemonset') {
+            conPercent = (item.status.desiredNumberScheduled - item.status.numberReady) + ' / ' + (item.status.numberReady || '0') + ' / ' + (item.status.desiredNumberScheduled || '0')
+          }
           data.push({
             setName: setName,
             uid: item.metadata.uid,
             name: item.metadata.name,
-            conPercent: (item.status.updatedReplicas || '0') + ' / ' + (item.status.replicas || '0'),
+            conPercent: conPercent,
             labels: item.metadata.labels || {},
             image: item.spec.template.spec.containers[0].image,
             create_time: item.metadata.creationTimestamp,
