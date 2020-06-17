@@ -87,7 +87,7 @@
     </Modal>
     <Modal v-model="restartModel" width="360">
       <p slot="header" title="重启">
-        <span>{{this.$t('delete')}}</span>
+        <span>{{this.$t('restart')}}</span>
       </p>
       <div style="text-align:center">
         <p style="line-height: 35px; margin-bottom: 10px">确认重启 <strong
