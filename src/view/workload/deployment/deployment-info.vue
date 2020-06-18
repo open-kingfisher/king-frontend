@@ -517,13 +517,7 @@ export default {
                 ]
               ))
             })
-            // const color =
-            //   text === 'Running'
-            //     ? 'success'
-            //     : text === 'Unknown'
-            //       ? 'error'
-            //       : 'warning'
-            if (text === 'Running') {
+            if (text === 'Running' && params.row.message.length === 0) {
               return h(
                 'Tag',
                 {
@@ -571,7 +565,7 @@ export default {
                                 [
                                   h(
                                     'th',
-                                    '容器名'
+                                    '对象'
                                   ),
                                   h(
                                     'th',
@@ -722,49 +716,46 @@ export default {
       listPodByController(params).then(res => {
         res.data.items.forEach((item, index) => {
           let status = item.status.phase
-          let tmp = false
           let message = []
           let containerStatuses = item.status.containerStatuses ? item.status.containerStatuses : []
           let initContainerStatuses = item.status.initContainerStatuses ? item.status.initContainerStatuses : []
           let allContainerStatuses = containerStatuses.concat(initContainerStatuses)
-          for (let i = 0; i < allContainerStatuses.length; i++) {
-            if (!allContainerStatuses[i].ready && allContainerStatuses[i].state.waiting) {
-              status = 'Waiting'
-              tmp = 'Waiting'
-              message.push({
-                status: 'Waiting',
-                name: allContainerStatuses[i].name,
-                reason: allContainerStatuses[i].state.waiting.reason,
-                message: allContainerStatuses[i].state.waiting.message
-              })
-            } else if (!allContainerStatuses[i].ready && allContainerStatuses[i].state.terminated) {
-              status = 'Terminated'
-              tmp = 'Terminated'
-              message.push({
-                status: 'Terminated',
-                name: allContainerStatuses[i].name,
-                reason: allContainerStatuses[i].state.terminated.reason,
-                message: allContainerStatuses[i].state.terminated.message
-              })
-            } else {
-              message.push({
-                status: item.status.phase,
-                name: allContainerStatuses[i].name
-                // msg: allContainerStatuses[i].state.waiting.reason + '：' + allContainerStatuses[i].state.waiting.message
-              })
-              status = item.status.phase
-            }
-          }
-          if (item.status.phase === 'Failed' || item.status.phase === 'Unknown') {
-            message.push({
-              status: item.status.phase,
-              name: item.spec.containers[0],
-              reason: item.status.reason ? item.status.reason : '',
-              message: item.status.message ? item.status.message : ''
+          // 条件
+          if (item.status.conditions) {
+            item.status.conditions.forEach((condition, index) => {
+              if (condition.status === 'False') {
+                message.push({
+                  status: condition.status,
+                  name: condition.type,
+                  reason: condition.reason ? condition.reason : '',
+                  message: condition.message ? condition.message : ''
+                })
+                status = 'NotReady'
+              }
             })
           }
-          if (tmp) {
-            status = tmp
+          // 容器状态
+          for (let i = 0; i < allContainerStatuses.length; i++) {
+            if (!allContainerStatuses[i].ready) {
+              if (allContainerStatuses[i].state.waiting) {
+                message.push({
+                  status: 'Waiting',
+                  name: allContainerStatuses[i].name,
+                  reason: allContainerStatuses[i].state.waiting.reason,
+                  message: allContainerStatuses[i].state.waiting.message
+                })
+                status = 'Waiting'
+              }
+              if (allContainerStatuses[i].state.terminated) {
+                message.push({
+                  status: 'Terminated',
+                  name: allContainerStatuses[i].name,
+                  reason: allContainerStatuses[i].state.terminated.reason,
+                  message: allContainerStatuses[i].state.terminated.message
+                })
+                status = 'Terminated'
+              }
+            }
           }
           this.podData.push({
             name: item.metadata.name,
