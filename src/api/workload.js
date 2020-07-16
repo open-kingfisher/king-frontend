@@ -152,3 +152,23 @@ export const getDebugPodIPByPod = (params) => {
     }
   })
 }
+
+export const offlinePod = (params) => {
+  return axios.request({
+    url: K8S_URL_PREFIX + 'pod/offline/' + params.name,
+    method: 'patch',
+    params: {
+      productId: params.productId
+    }
+  })
+}
+
+export const onlinePod = (params) => {
+  return axios.request({
+    url: K8S_URL_PREFIX + 'pod/online/' + params.name,
+    method: 'patch',
+    params: {
+      productId: params.productId
+    }
+  })
+}

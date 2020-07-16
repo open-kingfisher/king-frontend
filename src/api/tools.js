@@ -47,3 +47,12 @@ export const formatDateTime = (_date) => {
     [hour, minute, second].map(formatNumber).join(':')
   )
 }
+
+export const isOffline = (labels) => {
+  for (let key in labels) {
+    if (labels[key].includes('-kingfisher-offline')) {
+      return true
+    }
+  }
+  return false
+}
