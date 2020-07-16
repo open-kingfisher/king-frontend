@@ -872,6 +872,14 @@ export default {
               }
             }
           }
+          let restartCount = 0
+          if (item.status.containerStatuses) {
+            item.status.containerStatuses.forEach((item, index) => {
+              if (item.restartCount > restartCount) {
+                restartCount = item.restartCount
+              }
+            })
+          }
           data.push({
             name: item.metadata.name,
             labels: item.metadata.labels,
@@ -879,7 +887,7 @@ export default {
             message: message,
             nodeName: item.spec.nodeName,
             podIP: item.status.podIP || '',
-            restartCount: item.status.containerStatuses ? item.status.containerStatuses[0].restartCount : '-',
+            restartCount: restartCount,
             create_time: item.metadata.creationTimestamp,
             namespace: item.metadata.namespace,
             // containerStatuses: item.status.containerStatuses[0].state,
