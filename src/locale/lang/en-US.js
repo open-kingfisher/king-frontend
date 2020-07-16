@@ -156,5 +156,7 @@ export default {
   replicas: 'Replicas',
   logout: 'Sign out',
   profile: 'Profile',
-  restart: 'Restart'
+  restart: 'Restart',
+  offline: 'Offline',
+  online: 'Online'
 }

@@ -146,12 +146,34 @@
         <Button type="error" size="large" long  @click="del()" :loading="deleteLoading">{{this.$t('delete')}}</Button>
       </div>
     </Modal>
+    <Modal v-model="offlineModel" width="360">
+      <p slot="header" title="摘除">
+          <span>{{this.$t('offline')}}</span>
+      </p>
+      <div style="text-align:center">
+        <p style="line-height: 35px; margin-bottom: 10px">确认摘除  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？，摘除后使用Service模式的负载均衡将不在把流量请求到此Pod上面</p>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" long  @click="offline()" :loading="deleteLoading">{{this.$t('offline')}}</Button>
+      </div>
+    </Modal>
+    <Modal v-model="onlineModel" width="360">
+      <p slot="header" title="上线">
+          <span>{{this.$t('online')}}</span>
+      </p>
+      <div style="text-align:center">
+        <p style="line-height: 35px; margin-bottom: 10px">确认上线  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？，上线后使用Service模式的负载均衡将把流量请求到此Pod上面</p>
+      </div>
+      <div slot="footer">
+        <Button type="error" size="large" long  @click="online()" :loading="deleteLoading">{{this.$t('online')}}</Button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
-import { getAllPodData, getPodInfo, deleteOnePod, getPodLog, debugPod, rescuePod, getDebugPodIPByPod } from '@/api/workload'
+import { getAllPodData, getPodInfo, deleteOnePod, getPodLog, debugPod, rescuePod, getDebugPodIPByPod, offlinePod, onlinePod } from '@/api/workload'
 import { List } from '@/api/cluster-plugin'
-import { formatDate } from '@/api/tools'
+import { formatDate, isOffline } from '@/api/tools'
 import SearchTable from '@/view/other-page/search-table.vue'
 import Information from '../../other-page/information.vue'
 import YamlModal from '@/view/other-page/yaml-editor.vue'
@@ -172,6 +194,8 @@ export default {
       debugOn: false,
       deleteModel: false,
       deleteLoading: false,
+      offlineModel: false,
+      onlineModel: false,
       debugPrefix: 'debug-pod-',
       rescuePrefix: 'rescue-pod-',
       enterShow: false,
@@ -211,12 +235,19 @@ export default {
           fixed: 'left',
           render: (h, params) => {
             let color = ''
+            let podName = params.row.name
             this.tableData.forEach((item, index) => {
               if (this.debugPrefix + params.row.name === item.name) {
                 color = '#ff9900'
+                podName = params.row.name + ' [调试中]'
               }
               if (this.rescuePrefix + params.row.name === item.name) {
                 color = '#ed4014'
+                podName = params.row.name + ' [救援中]'
+              }
+              if (isOffline(params.row.labels)) {
+                color = '#898484'
+                podName = params.row.name + ' [被摘除]'
               }
             })
             return h(
@@ -239,7 +270,7 @@ export default {
                       color: color
                     }
                   },
-                  params.row.name
+                  podName
                 )
               ]
             )
@@ -457,6 +488,10 @@ export default {
             if (!hasPermission('rescue_pod')) {
               rescueDisabled = true
             }
+            let offline = 'offline'
+            if (isOffline(params.row.labels)) {
+              offline = 'online'
+            }
             return h('div', [
               h(
                 'Button',
@@ -593,6 +628,23 @@ export default {
                       }
                     }
                   }, this.$t('log')),
+                  h('DropdownItem', {
+                    props: {
+                      disabled: !hasPermission('pod_offline')
+                    },
+                    nativeOn: {
+                      click: () => {
+                        if (hasPermission('pod_offline')) {
+                          if (isOffline(params.row.labels)) {
+                            this.onlineModel = true
+                          } else {
+                            this.offlineModel = true
+                          }
+                          this.podName = params.row.name
+                        }
+                      }
+                    }
+                  }, this.$t(offline)),
                   h('DropdownItem', {
                     props: {
                       disabled: !hasPermission('del_pod'),
@@ -822,6 +874,7 @@ export default {
           }
           data.push({
             name: item.metadata.name,
+            labels: item.metadata.labels,
             status: status,
             message: message,
             nodeName: item.spec.nodeName,
@@ -879,6 +932,40 @@ export default {
     logRefresh () {
       this.getLog(60)
       this.$Message.success(this.$t('refresh_success'))
+    },
+    offline () {
+      offlinePod({
+        productId: 100,
+        name: this.podName,
+        namespace: this.$store.getters.currentNamespaceName
+      }).then(res => {
+        if (res.code === 200) {
+          this.$Message.success({
+            content: this.$t('action_success')
+          })
+          this.formatTableData()
+          this.offlineModel = false
+        }
+      }).catch(() => {
+        //
+      })
+    },
+    online () {
+      onlinePod({
+        productId: 100,
+        name: this.podName,
+        namespace: this.$store.getters.currentNamespaceName
+      }).then(res => {
+        if (res.code === 200) {
+          this.$Message.success({
+            content: this.$t('action_success')
+          })
+          this.formatTableData()
+          this.onlineModel = false
+        }
+      }).catch(() => {
+        //
+      })
     }
   }
 }

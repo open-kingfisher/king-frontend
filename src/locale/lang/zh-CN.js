@@ -155,5 +155,7 @@ export default {
   replicas: '副本',
   logout: '退出登录',
   profile: '个人中心',
-  restart: '重启'
+  restart: '重启',
+  offline: '摘除',
+  online: '上线'
 }
