@@ -151,7 +151,7 @@
           <span>{{this.$t('offline')}}</span>
       </p>
       <div style="text-align:center">
-        <p style="line-height: 35px; margin-bottom: 10px">确认摘除  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？，摘除后使用Service模式的负载均衡将不在把流量请求到此Pod上面</p>
+        <p style="line-height: 35px; margin-bottom: 10px">确认摘除  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？摘除后使用Service模式的负载均衡将不在把流量请求到此Pod上面</p>
       </div>
       <div slot="footer">
         <Button type="error" size="large" long  @click="offline()" :loading="deleteLoading">{{this.$t('offline')}}</Button>
@@ -162,7 +162,7 @@
           <span>{{this.$t('online')}}</span>
       </p>
       <div style="text-align:center">
-        <p style="line-height: 35px; margin-bottom: 10px">确认上线  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？，上线后使用Service模式的负载均衡将把流量请求到此Pod上面</p>
+        <p style="line-height: 35px; margin-bottom: 10px">确认上线  <strong style="color:#f60;text-align:center">{{podName}}</strong> 吗？上线后使用Service模式的负载均衡将把流量请求到此Pod上面</p>
       </div>
       <div slot="footer">
         <Button type="error" size="large" long  @click="online()" :loading="deleteLoading">{{this.$t('online')}}</Button>
