@@ -190,6 +190,33 @@
             <span slot="close">关闭</span>
           </i-switch>
         </FormItem>
+        <FormItem label="分析日志">
+          <i-switch size="large" v-model="formItemBase.logAnalyze.logAnalyzeDisplay" :true-value=1 :false-value=0>
+            <span slot="open">开启</span>
+            <span slot="close">关闭</span>
+          </i-switch>
+        </FormItem>
+        <div v-if="formItemBase.logAnalyze.logAnalyzeDisplay === 1">
+          <FormItem>
+            <Row type="flex" justify="space-between">
+              <Col span="17">
+                <FormItem prop="logAnalyze.logFileDirectory">
+                  <Input v-model="formItemBase.logAnalyze.logFileDirectory">
+                    <span slot="prepend">业务日志路径</span>
+                  </Input>
+                </FormItem>
+              </Col>
+              <Col span="6">
+                <FormItem>
+                  <Input v-model="formItemBase.logAnalyze.metricInterval">
+                    <span slot="prepend">脚本执行周期</span>
+                    <span slot="append">秒</span>
+                  </Input>
+                </FormItem>
+              </Col>
+            </Row>
+          </FormItem>
+        </div>
         <!--节点选择-->
         <FormItem label="节点选择">
           <i-switch size="large" v-model="formItemBase.nodeDisplay" :true-value=1 :false-value=0>
@@ -1655,6 +1682,11 @@ export default {
       servicePort: {},
       current: 0,
       formItemBase: {
+        logAnalyze: {
+          logAnalyzeDisplay: 0,
+          logFileDirectory: '',
+          metricInterval: ''
+        },
         template: '不使用模板',
         name: '',
         replicasNum: 1,
@@ -1883,6 +1915,9 @@ export default {
           { validator: validateRollingUpdate, trigger: 'blur' }
         ],
         'labels[0].key': [
+          { required: true, message: this.$t('not_null'), trigger: 'blur' }
+        ],
+        'logAnalyze.logFileDirectory': [
           { required: true, message: this.$t('not_null'), trigger: 'blur' }
         ]
       },
@@ -3211,6 +3246,8 @@ export default {
           }
         })
       }
+
+      // istio
       if (this.formItemBase.isitoDisabled === false) {
         if (this.formItemBase.istioDisplay === 0) {
           json.spec.template.metadata.annotations['sidecar.istio.io/inject'] = 'false'
@@ -3562,6 +3599,22 @@ export default {
           }
         })
       }
+      // log analyze
+      if (this.formItemBase.logAnalyze.logAnalyzeDisplay === 1) {
+        json.spec.template.metadata.labels['log-injection'] = 'enabled'
+        json.metadata.labels['log-injection'] = 'enabled'
+        json.spec.template.metadata.annotations['log-file-directory'] = this.formItemBase.logAnalyze.logFileDirectory
+        if (this.formItemBase.logAnalyze.metricInterval) {
+          json.spec.template.metadata.annotations['metric-interval'] = this.formItemBase.logAnalyze.metricInterval
+        }
+        delete json.spec.selector.matchLabels['log-injection']
+      } else {
+        delete json.spec.template.metadata.annotations['metric-interval']
+        delete json.spec.template.metadata.labels['log-injection']
+        delete json.metadata.labels['log-injection']
+        delete json.spec.template.metadata.annotations['log-file-directory']
+        delete json.spec.selector.matchLabels['log-injection']
+      }
       if (value === 'CREATE') {
         formCreateController({
           productId: 100,
@@ -3595,6 +3648,11 @@ export default {
     },
     handleReset () {
       this.formItemBase = {
+        logAnalyze: {
+          logAnalyzeDisplay: 0,
+          logFileDirectory: '',
+          metricInterval: ''
+        },
         template: '不使用模板',
         name: '',
         replicasNum: 1,
@@ -3791,6 +3849,18 @@ export default {
     },
     editFun (res) {
       this.deployment = res.data
+      // log analyze
+      this.formItemBase.logAnalyze.logAnalyzeDisplay = 0
+      this.formItemBase.logAnalyze.logFileDirectory = ''
+      this.formItemBase.logAnalyze.metricInterval = ''
+      if (res.data.metadata.labels && res.data.metadata.labels['log-injection'] === 'enabled') {
+        this.formItemBase.logAnalyze.logAnalyzeDisplay = 1
+      }
+      if (res.data.spec.template.metadata.annotations) {
+        if (res.data.spec.template.metadata.annotations['log-file-directory']) {
+          this.formItemBase.logAnalyze.logFileDirectory = res.data.spec.template.metadata.annotations['log-file-directory']
+        }
+      }
       this.formItemBase.name = this.option !== 'copy' ? res.data.metadata.name : res.data.metadata.name + '-copy'
       this.formItemBase.replicasNum = res.data.spec.replicas
       if (res.data.kind === 'Deployment') {
