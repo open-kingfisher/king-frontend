@@ -804,7 +804,7 @@ export default {
         res.data.forEach((item, index) => {
           this.deployment.push({
             name: item.metadata.name,
-            labels: item.metadata.labels
+            labels: item.spec.selector.matchLabels
           })
         })
       })
