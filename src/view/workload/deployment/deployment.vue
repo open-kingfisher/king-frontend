@@ -3606,6 +3606,8 @@ export default {
         json.spec.template.metadata.annotations['log-file-directory'] = this.formItemBase.logAnalyze.logFileDirectory
         if (this.formItemBase.logAnalyze.metricInterval) {
           json.spec.template.metadata.annotations['metric-interval'] = this.formItemBase.logAnalyze.metricInterval
+        } else {
+          delete json.spec.template.metadata.annotations['metric-interval']
         }
         delete json.spec.selector.matchLabels['log-injection']
       } else {
@@ -3859,6 +3861,9 @@ export default {
       if (res.data.spec.template.metadata.annotations) {
         if (res.data.spec.template.metadata.annotations['log-file-directory']) {
           this.formItemBase.logAnalyze.logFileDirectory = res.data.spec.template.metadata.annotations['log-file-directory']
+        }
+        if (res.data.spec.template.metadata.annotations['metric-interval']) {
+          this.formItemBase.logAnalyze.metricInterval = res.data.spec.template.metadata.annotations['metric-interval']
         }
       }
       this.formItemBase.name = this.option !== 'copy' ? res.data.metadata.name : res.data.metadata.name + '-copy'
