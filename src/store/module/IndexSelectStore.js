@@ -5,10 +5,12 @@ import { KF_URL_PREFIX } from '../../../config/conf'
 const state = {
   clusterId: '',
   namespaceId: '',
+  productId: '',
   selectObj: [],
   selectedData: [],
   currentNamespaceName: '',
   currentClusterName: '',
+  currentProductName: '',
   clusterSelect: true,
   quickMenu: false
 }
@@ -19,8 +21,10 @@ const getters = {
   getSelectedData: state => state.selectedData,
   currentClusterId: state => state.clusterId,
   currentNamespaceId: state => state.namespaceId,
+  currentProductId: state => state.productId,
   currentNamespaceName: state => state.currentNamespaceName,
   currentClusterName: state => state.currentClusterName,
+  currentProductName: state => state.currentProductName,
   clusterSelect: state => state.clusterSelect,
   quickMenu: state => state.quickMenu
 }
@@ -31,8 +35,10 @@ const actions = {
     commit('setSelectedData', obj.selectedData)
     commit('setClusterId', obj.clusterId.value)
     commit('setNamespaceId', obj.namespaceId.value)
+    commit('setProductId', obj.productId.value)
     commit('setCurrentNamespaceName', obj.namespaceId.label)
     commit('setCurrentClusterName', obj.clusterId.label)
+    commit('setCurrentProductName', obj.productId.label)
 
     axios.interceptors.request.eject(requestInterceptors)
 
@@ -70,11 +76,17 @@ const mutations = {
   setNamespaceId (state, value) {
     state.namespaceId = value
   },
+  setProductId (state, value) {
+    state.productId = value
+  },
   setCurrentClusterName (state, value) {
     state.currentClusterName = value
   },
   setCurrentNamespaceName (state, value) {
     state.currentNamespaceName = value
+  },
+  setCurrentProductName (state, value) {
+    state.currentProductName = value
   },
   setSelectedData (state, value) {
     state.selectedData = value

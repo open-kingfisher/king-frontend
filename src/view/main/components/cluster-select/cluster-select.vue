@@ -127,6 +127,7 @@ export default {
       setSessionStorage('selectedData', selectedData)
       let data = {
         selectedData: selectValue,
+        productId: selectedData[0],
         clusterId: selectedData[1],
         namespaceId: selectedData[2]
       }
