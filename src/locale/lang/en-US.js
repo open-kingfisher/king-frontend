@@ -158,5 +158,6 @@ export default {
   profile: 'Profile',
   restart: 'Restart',
   offline: 'Offline',
-  online: 'Online'
+  online: 'Online',
+  chart: 'Chart'
 }

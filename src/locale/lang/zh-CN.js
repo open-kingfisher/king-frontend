@@ -157,5 +157,6 @@ export default {
   profile: '个人中心',
   restart: '重启',
   offline: '摘除',
-  online: '上线'
+  online: '上线',
+  chart: '图表'
 }
