@@ -1,6 +1,5 @@
 import { axios } from '../libs/api.new.request'
-import { K8S_URL_PREFIX } from '../../config/conf'
-import { formatTimestamp } from '@/api/tools'
+import { K8S_URL_PREFIX, GRAFANA_URL_PREFIX } from '../../config/conf'
 /** ********************************** Controller **************************************************/
 /*
 1、获取指定Namespace下Controller
@@ -536,6 +535,50 @@ export const restartController = (params) => {
   return axios.request({
     url: K8S_URL_PREFIX + 'controller/' + params.setName + '/restart/' + params.ctrl,
     method: 'patch',
+    params: {
+      productId: params.productId
+    }
+  })
+}
+
+export const getChartURL = (params) => {
+  return axios.request({
+    url: GRAFANA_URL_PREFIX + 'dashboard',
+    method: 'get',
+    params: {
+      productId: params.productId,
+      kindName: params.kindName
+    }
+  })
+}
+
+export const createChart = (params) => {
+  return axios.request({
+    url: GRAFANA_URL_PREFIX + 'dashboard',
+    method: 'post',
+    params: {
+      productId: params.productId,
+      kindName: params.kindName,
+      graingress: params.graingress
+    }
+  })
+}
+
+export const deleteChartURL = (params) => {
+  return axios.request({
+    url: GRAFANA_URL_PREFIX + 'dashboard',
+    method: 'delete',
+    params: {
+      productId: params.productId,
+      kindName: params.kindName
+    }
+  })
+}
+
+export const getIngressByDeployment = (params) => {
+  return axios.request({
+    url: K8S_URL_PREFIX + 'ingressByDeployment/' + params.ctrl,
+    method: 'get',
     params: {
       productId: params.productId
     }

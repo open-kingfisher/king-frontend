@@ -1580,7 +1580,11 @@ import {
   getOneControllerInfo,
   scaleController,
   updateController,
-  getNamespaceLabel
+  getNamespaceLabel,
+  getChartURL,
+  createChart,
+  deleteChartURL,
+  getIngressByDeployment
 } from '@/api/deployment'
 import { getAllConfMap, getAllSecret, getOneConfMap, getOneSecret } from '@/api/configuration'
 import { getAllNodeData } from '@/api/cluster'
@@ -2230,6 +2234,26 @@ export default {
                   }, this.$t('copy')),
                   h('DropdownItem', {
                     props: {
+                      disabled: !hasPermission('chart_dep')
+                    },
+                    nativeOn: {
+                      click: () => {
+                        if (hasPermission('chart_dep')) {
+                          // this.current = 0
+                          // this.optionTitle = this.$t('chart') + ' ' + params.row.name
+                          // this.option = 'chart'
+                          // this.formAddModel = true
+                          // this.nameExistCheck = false
+                          this.ctrl = params.row.name
+                          this.setName = params.row.setName
+                          // this.templateDisplay = false
+                          this.getChartUrl(params.row.name)
+                        }
+                      }
+                    }
+                  }, this.$t('chart')),
+                  h('DropdownItem', {
+                    props: {
                       disabled: !hasPermission('save_tem_dep')
                     },
                     nativeOn: {
@@ -2449,6 +2473,16 @@ export default {
           this.formatTableData()
           this.deleteLoading = false
           this.deleteModel = false
+          deleteChartURL({
+            productId: this.$store.getters.currentProductId,
+            kindName: this.ctrl
+          }).then(ress => {
+            if (ress.code === 200) {
+              // this.$Message.success({
+              //   content: this.$t('action_success')
+              // })
+            }
+          })
         } else {
           this.deleteLoading = false
         }
@@ -4458,6 +4492,34 @@ export default {
             }
           })
         }
+      })
+    },
+    getChartUrl (kindName) {
+      let productId = this.$store.getters.currentProductId
+      getChartURL({
+        productId: productId,
+        kindName: kindName
+      }).then(res => {
+        if (res.code === 200) {
+          window.open(res.data, '_blank')
+        }
+      }).catch(e => {
+        getIngressByDeployment({
+          productId: productId,
+          ctrl: this.ctrl
+        }).then(ress => {
+          if (ress.code === 200) {
+            createChart({
+              productId: productId,
+              kindName: kindName,
+              graingress: ress.data
+            }).then(res => {
+              if (res.code === 200) {
+                window.open(res.data, '_blank')
+              }
+            })
+          }
+        })
       })
     }
   }
