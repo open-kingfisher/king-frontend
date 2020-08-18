@@ -63,6 +63,8 @@ const responseInterceptors = axios.interceptors.response.use(
           duration: 10
         })
       }
+    } else if (data.msg === 'dashboard not exist') {
+      Notice.info({ title: '创建图表', desc: '图表创建中请等待...', duration: 10 })
     } else {
       Notice.error({ title: '错误提示', desc: data.msg })
     }
