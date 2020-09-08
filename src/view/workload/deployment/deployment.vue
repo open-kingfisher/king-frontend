@@ -3644,12 +3644,14 @@ export default {
           delete json.spec.template.metadata.annotations['metric-interval']
         }
         delete json.spec.selector.matchLabels['log-injection']
+        delete json.spec.selector.matchLabels['fix-pod-ip']
       } else {
         delete json.spec.template.metadata.annotations['metric-interval']
         delete json.spec.template.metadata.labels['log-injection']
         delete json.metadata.labels['log-injection']
         delete json.spec.template.metadata.annotations['log-file-directory']
         delete json.spec.selector.matchLabels['log-injection']
+        delete json.spec.selector.matchLabels['fix-pod-ip']
       }
       if (value === 'CREATE') {
         formCreateController({
