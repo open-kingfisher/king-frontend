@@ -244,6 +244,17 @@ const routes = [
         component: () => import("@/view/workload/deployment/deployment-info.vue")
       },
       {
+        path: "cicd",
+        name: "cicd",
+        meta: {
+          title: "cicd",
+          icon: "ios-settings-outline",
+          cache: false,
+          access: ['cicd']
+        },
+        component: () => import("@/view/application/ci-cd/ci-cd.vue")
+      },
+      {
         path: "template",
         name: "template",
         meta: {

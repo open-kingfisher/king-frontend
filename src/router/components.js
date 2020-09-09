@@ -18,6 +18,7 @@ const clusterrolebind = () => import('@/view/rbac/clusterrolebind/clusterrolebin
 const apply = () => import('@/view/application/apply/apply.vue')
 const applyInfo = () => import('@/view/workload/deployment/deployment-info.vue')
 const template = () => import('@/view/application/template/template.vue')
+const cicd = () => import('@/view/application/ci-cd/ci-cd.vue')
 const deployment = () => import('@/view/workload/deployment/deployment.vue')
 const deploymentInfo = () => import('@/view/workload/deployment/deployment-info.vue')
 const pod = () => import('@/view/workload/pod/pod.vue')
@@ -78,6 +79,7 @@ export default {
   apply,
   applyInfo,
   template,
+  cicd,
   deployment,
   deploymentInfo,
   podexec,
