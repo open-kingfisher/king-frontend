@@ -158,5 +158,8 @@ export default {
   restart: '重启',
   offline: '摘除',
   online: '上线',
-  chart: '图表'
+  chart: '图表',
+  cicd: 'CI/CD',
+  increase: '增加消费者',
+  reduce: '减少消费者'
 }

@@ -159,5 +159,8 @@ export default {
   restart: 'Restart',
   offline: 'Offline',
   online: 'Online',
-  chart: 'Chart'
+  chart: 'Chart',
+  cicd: 'CI/CD',
+  increase: 'Increase consumer',
+  reduce: 'Reduce consumer'
 }
