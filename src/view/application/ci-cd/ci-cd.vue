@@ -6,7 +6,7 @@
         <Col span="24" style="margin-top: 15px; margin-bottom: 15px">
           <Col span="4">
               <div style="text-align:center">
-                <h2>初始消费者数：{{concurrency}}</h2>
+                <h2>初始消费者数：{{consumer}}</h2>
               </div>
           </Col>
           <Col span="4">
@@ -16,7 +16,7 @@
           </Col>
           <Col span="4">
               <div style="text-align:center">
-                <h2>最大消费者数：{{maxConcurrency}}</h2>
+                <h2>最大消费者数：{{maxConsumer}}</h2>
               </div>
           </Col>
           <Col span="4">
@@ -50,13 +50,13 @@
           <charts :data=queue title="待消费数" name="单位（个）"></charts>
         </Col>
         <Col span="12">
-          <charts :data=currentConcurrency title="消费者数" name="单位（个）"></charts>
+          <charts :data=currentConsumer title="消费者数" name="单位（个）"></charts>
         </Col>
         <Col span="12">
           <charts :data=surge title="激增数" name="单位（个）"></charts>
         </Col>
         <Col span="12">
-          <charts :data=workingSize title="工作中消费者数" name="单位（个）"></charts>
+          <charts :data=workingConsumer title="工作中消费者数" name="单位（个）"></charts>
         </Col>
          <Col span="24">
           <hr style="height:1px;border:none;border-top:1px dashed #dcdee2;margin-bottom: 15px"/>
@@ -122,15 +122,14 @@ export default {
   },
   data () {
     return {
-      consumer: 0,
-      currentConcurrency: [0, 0, 0, 0, 0, 0],
+      currentConsumer: [0, 0, 0, 0, 0, 0],
       queue: [0, 0, 0, 0, 0, 0],
       surge: [0, 0, 0, 0, 0, 0],
-      workingSize: [0, 0, 0, 0, 0, 0],
+      workingConsumer: [0, 0, 0, 0, 0, 0],
+      consumer: 0,
       queueSize: 0,
-      concurrency: 0,
       duration: 0,
-      maxConcurrency: 0,
+      maxConsumer: 0,
       stableTime: 0,
       name: '',
       title: '',
@@ -375,18 +374,18 @@ export default {
       Metric({
         productId: 100
       }).then(res => {
-        this.currentConcurrency.splice(0, 1)
-        this.currentConcurrency.push(res.currentConcurrency)
+        this.currentConsumer.splice(0, 1)
+        this.currentConsumer.push(res.currentConsumer)
         this.queue.splice(0, 1)
         this.queue.push(res.queue)
         this.surge.splice(0, 1)
         this.surge.push(res.surge)
-        this.workingSize.splice(0, 1)
-        this.workingSize.push(res.workingSize)
+        this.workingConsumer.splice(0, 1)
+        this.workingConsumer.push(res.workingConsumer)
         this.queueSize = res.queueSize
-        this.concurrency = res.concurrency
+        this.consumer = res.consumer
         this.duration = res.duration
-        this.maxConcurrency = res.maxConcurrency
+        this.maxConsumer = res.maxConsumer
         this.stableTime = res.stableTime
       })
     },
